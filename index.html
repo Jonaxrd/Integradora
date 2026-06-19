@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Hardware Scanner</title>
+
+<style>
+
+:root{
+    --bg:#0f172a;
+    --card:#1e293b;
+    --card-hover:#273549;
+    --primary:#38bdf8;
+    --text:#ffffff;
+    --secondary:#94a3b8;
+    --success:#22c55e;
+    --warning:#f59e0b;
+    --danger:#ef4444;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#020617,#0f172a);
+    color:var(--text);
+    min-height:100vh;
+    padding:30px;
+}
+
+header{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+header h1{
+    font-size:2.5rem;
+    margin-bottom:10px;
+}
+
+header p{
+    color:var(--secondary);
+}
+
+.btn-scan{
+    display:block;
+    margin:25px auto;
+    padding:14px 35px;
+    border:none;
+    border-radius:12px;
+    background:var(--primary);
+    color:#000;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.btn-scan:hover{
+    transform:translateY(-2px);
+}
+
+#estado{
+    text-align:center;
+    margin-bottom:20px;
+    color:var(--secondary);
+}
+
+.dashboard{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(350px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:rgba(30,41,59,.9);
+    border-radius:18px;
+    padding:20px;
+    border:1px solid rgba(255,255,255,.05);
+    transition:.3s;
+}
+
+.card:hover{
+    background:var(--card-hover);
+}
+
+.card h2{
+    color:var(--primary);
+    margin-bottom:15px;
+    font-size:1.2rem;
+}
+
+.item{
+    margin-bottom:12px;
+}
+
+.item strong{
+    display:block;
+    margin-bottom:3px;
+}
+
+.progress{
+    width:100%;
+    height:12px;
+    background:#334155;
+    border-radius:10px;
+    overflow:hidden;
+    margin-top:8px;
+}
+
+.progress-bar{
+    height:100%;
+    background:var(--primary);
+}
+
+.health-score{
+    text-align:center;
+}
+
+.health-score h1{
+    font-size:4rem;
+}
+
+.health-score p{
+    font-size:1.1rem;
+    color:var(--secondary);
+}
+
+.recomendacion{
+    background:#334155;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:12px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.recomendacion:hover{
+    background:#475569;
+}
+
+.detalle{
+    display:none;
+    margin-top:10px;
+    color:#cbd5e1;
+    line-height:1.6;
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 10px;
+    border-radius:20px;
+    font-size:.8rem;
+    margin-bottom:10px;
+}
+
+.alta{
+    background:#7f1d1d;
+}
+
+.media{
+    background:#78350f;
+}
+
+.baja{
+    background:#14532d;
+}
+
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Hardware Scanner</h1>
+    <p>Diagnóstico y recomendaciones de actualización de hardware</p>
+</header>
+
+<button class="btn-scan" onclick="cargarDatos()">
+Analizar Equipo
+</button>
+
+<div id="estado">
+Esperando análisis...
+</div>
+
+<div class="dashboard">
+
+<div class="card">
+    <h2>Estado General</h2>
+    <div id="saludEquipo" class="health-score">
+        Esperando análisis...
+    </div>
+</div>
+
+<div class="card">
+    <h2>Sistema</h2>
+    <div id="sistema"></div>
+</div>
+
+<div class="card">
+    <h2>Procesador</h2>
+    <div id="cpu"></div>
+</div>
+
+<div class="card">
+    <h2>Memoria RAM</h2>
+    <div id="ram"></div>
+</div>
+
+<div class="card">
+    <h2>Tarjeta Madre</h2>
+    <div id="motherboard"></div>
+</div>
+
+<div class="card">
+    <h2>Tarjeta Gráfica</h2>
+    <div id="gpu"></div>
+</div>
+
+<div class="card">
+    <h2>Almacenamiento</h2>
+    <div id="discos"></div>
+</div>
+
+<div class="card">
+    <h2>Recomendaciones</h2>
+    <div id="recomendaciones"></div>
+</div>
+
+</div>
+
+<script>
+
+async function cargarDatos(){
+
+    document.getElementById("estado").innerHTML =
+    "Analizando hardware...";
+
+    try{
+
+        const response = await fetch("hardware.json");
+        const datos = await response.json();
+
+        mostrarObjeto("sistema", datos.Sistema);
+        mostrarObjeto("cpu", datos.CPU);
+        mostrarRAM(datos.RAM);
+        mostrarObjeto("motherboard", datos.Motherboard);
+        mostrarGPU(datos.GPU);
+        mostrarDiscos(datos.Discos);
+
+        calcularSalud(datos);
+        generarRecomendaciones(datos);
+
+        document.getElementById("estado").innerHTML =
+        "Análisis completado";
+
+    }catch(error){
+
+        document.getElementById("estado").innerHTML =
+        "No se pudo cargar hardware.json";
+
+        console.error(error);
+    }
+}
+
+function mostrarObjeto(id,objeto){
+
+    let html="";
+
+    for(let clave in objeto){
+
+        html+=`
+        <div class="item">
+            <strong>${clave}</strong>
+            ${objeto[clave]}
+        </div>`;
+    }
+
+    document.getElementById(id).innerHTML=html;
+}
+
+function mostrarRAM(ram){
+
+    document.getElementById("ram").innerHTML=`
+
+        <div class="item">
+            <strong>Total</strong>
+            ${ram.RAM_Total_GB} GB
+        </div>
+
+        <div class="item">
+            <strong>Uso</strong>
+            ${ram.Uso_RAM_Porcentaje}%
+
+            <div class="progress">
+                <div class="progress-bar"
+                     style="width:${ram.Uso_RAM_Porcentaje}%">
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function mostrarGPU(gpus){
+
+    let html="";
+
+    if(gpus.length===0){
+
+        html=`
+        <div class="item">
+            No se detectó una GPU dedicada.
+        </div>
+        `;
+
+    }else{
+
+        gpus.forEach(gpu=>{
+
+            html+=`
+            <div class="item">
+                <strong>${gpu.Nombre}</strong>
+            </div>
+            `;
+        });
+    }
+
+    document.getElementById("gpu").innerHTML=html;
+}
+
+function mostrarDiscos(discos){
+
+    let html="";
+
+    discos.forEach(disco=>{
+
+        html+=`
+
+        <div class="item">
+
+            <strong>${disco.Unidad}</strong>
+
+            Capacidad: ${disco.Capacidad_GB} GB
+
+            <div class="progress">
+                <div class="progress-bar"
+                     style="width:${disco.Uso_Porcentaje}%">
+                </div>
+            </div>
+
+            Uso: ${disco.Uso_Porcentaje}%
+
+        </div>
+        `;
+    });
+
+    document.getElementById("discos").innerHTML=html;
+}
+
+function calcularSalud(datos){
+
+    let score=100;
+
+    if(datos.CPU.Nucleos_Fisicos<=2)
+        score-=25;
+
+    if(datos.RAM.Uso_RAM_Porcentaje>80)
+        score-=15;
+
+    if(datos.GPU.length===0)
+        score-=25;
+
+    if(datos.Discos[0].Uso_Porcentaje>80)
+        score-=15;
+
+    let estado="Excelente";
+    let color="#22c55e";
+
+    if(score<80){
+        estado="Bueno";
+        color="#f59e0b";
+    }
+
+    if(score<60){
+        estado="Requiere mejoras";
+        color="#ef4444";
+    }
+
+    document.getElementById("saludEquipo").innerHTML=`
+        <h1 style="color:${color}">
+            ${score}
+        </h1>
+
+        <p>${estado}</p>
+    `;
+}
+
+function toggle(id){
+
+    const e=document.getElementById(id);
+
+    if(e.style.display==="block"){
+        e.style.display="none";
+    }else{
+        e.style.display="block";
+    }
+}
+
+function generarRecomendaciones(datos){
+
+    let html="";
+
+    if(datos.CPU.Nucleos_Fisicos<=2){
+
+        html+=`
+        <div class="recomendacion"
+             onclick="toggle('cpuRec')">
+
+            <div class="badge alta">
+                Prioridad Alta
+            </div>
+
+            Actualización de Procesador
+
+            <div class="detalle" id="cpuRec">
+
+                Procesador actual:
+                ${datos.CPU.Procesador}
+
+                <br><br>
+
+                Se recomienda un procesador
+                de al menos 4 o 6 núcleos
+                para mejorar el rendimiento general.
+            </div>
+
+        </div>
+        `;
+    }
+
+    if(datos.RAM.Uso_RAM_Porcentaje>80){
+
+        html+=`
+        <div class="recomendacion"
+             onclick="toggle('ramRec')">
+
+            <div class="badge media">
+                Prioridad Media
+            </div>
+
+            Optimización de Memoria
+
+            <div class="detalle" id="ramRec">
+
+                El sistema utiliza
+                ${datos.RAM.Uso_RAM_Porcentaje}% de RAM.
+
+                <br><br>
+
+                Se recomienda ampliar
+                a 16 GB de memoria.
+            </div>
+
+        </div>
+        `;
+    }
+
+    if(datos.GPU.length===0){
+
+        html+=`
+        <div class="recomendacion"
+             onclick="toggle('gpuRec')">
+
+            <div class="badge alta">
+                Prioridad Alta
+            </div>
+
+            Tarjeta Gráfica
+
+            <div class="detalle" id="gpuRec">
+
+                No se detectó una GPU dedicada.
+
+                <br><br>
+
+                Para gaming o diseño se recomienda
+                instalar una GPU dedicada compatible.
+            </div>
+
+        </div>
+        `;
+    }
+
+    if(datos.Discos[0].Uso_Porcentaje>80){
+
+        html+=`
+        <div class="recomendacion"
+             onclick="toggle('ssdRec')">
+
+            <div class="badge media">
+                Prioridad Media
+            </div>
+
+            Almacenamiento
+
+            <div class="detalle" id="ssdRec">
+
+                El disco está al
+                ${datos.Discos[0].Uso_Porcentaje}% de uso.
+
+                <br><br>
+
+                Se recomienda un SSD
+                de mayor capacidad.
+            </div>
+
+        </div>
+        `;
+    }
+
+    document.getElementById("recomendaciones").innerHTML=html;
+}
+
+</script>
+
+</body>
+</html>
