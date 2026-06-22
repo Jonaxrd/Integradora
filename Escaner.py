@@ -1,16 +1,17 @@
 import tkinter as tk
 from tkinter import ttk
 import json
-
 import platform
 import psutil
 import cpuinfo
 import wmi
 import GPUtil
+import subprocess
+import sys
+
 
 def obtener_cpu():
     info = cpuinfo.get_cpu_info()
-
     return {
         "Procesador": info.get("brand_raw", "Desconocido"),
         "Nucleos_Fisicos": psutil.cpu_count(logical=False),
@@ -20,7 +21,6 @@ def obtener_cpu():
 
 def obtener_ram():
     memoria = psutil.virtual_memory()
-
     return {
         "RAM_Total_GB": round(memoria.total / (1024**3), 2),
         "RAM_Usada_GB": round(memoria.used / (1024**3), 2),
@@ -29,44 +29,17 @@ def obtener_ram():
     }
 
 
-def obtener_discos():
-    discos = []
-
-    for particion in psutil.disk_partitions():
-        try:
-            uso = psutil.disk_usage(particion.mountpoint)
-
-            discos.append({
-                "Unidad": particion.device,
-                "Sistema_Archivos": particion.fstype,
-                "Capacidad_GB": round(uso.total / (1024**3), 2),
-                "Usado_GB": round(uso.used / (1024**3), 2),
-                "Libre_GB": round(uso.free / (1024**3), 2),
-                "Uso_Porcentaje": uso.percent
-            })
-
-        except PermissionError:
-            continue
-
-    return discos
-
-
 def obtener_gpu():
     gpus = []
-
     try:
         for gpu in GPUtil.getGPUs():
             gpus.append({
                 "Nombre": gpu.name,
                 "VRAM_MB": gpu.memoryTotal,
-                "VRAM_Usada_MB": gpu.memoryUsed,
-                "VRAM_Libre_MB": gpu.memoryFree,
                 "Uso_GPU_Porcentaje": round(gpu.load * 100, 2)
             })
-
-    except Exception as e:
-        print(f"Error al detectar GPU: {e}")
-
+    except:
+        pass
     return gpus
 
 
@@ -74,17 +47,12 @@ def obtener_motherboard():
     try:
         c = wmi.WMI()
         board = c.Win32_BaseBoard()[0]
-
         return {
             "Fabricante": board.Manufacturer,
             "Modelo": board.Product
         }
-
-    except Exception:
-        return {
-            "Fabricante": "No disponible",
-            "Modelo": "No disponible"
-        }
+    except:
+        return {"Fabricante": "No disponible", "Modelo": "No disponible"}
 
 
 def obtener_sistema():
@@ -96,66 +64,22 @@ def obtener_sistema():
     }
 
 
-def generar_json():
-    datos = {
-        "sistema": obtener_sistema(),
-        "cpu": obtener_cpu(),
-        "ram": obtener_ram(),
-        "motherboard": obtener_motherboard(),
-        "gpu": obtener_gpu(),
-        "discos": obtener_discos()
-    }
-
-    with open("hardware.json", "w", encoding="utf-8") as archivo:
-        json.dump(datos, archivo, indent=4, ensure_ascii=False)
-
-    print("\n Archivo hardware.json generado correctamente")
-
-
-def mostrar_datos():
-    print("=" * 60)
-    print("ESCANEO DE HARDWARE")
-    print("=" * 60)
-
-    print("\n SISTEMA")
-    for k, v in obtener_sistema().items():
-        print(f"{k}: {v}")
-
-    print("\n CPU")
-    for k, v in obtener_cpu().items():
-        print(f"{k}: {v}")
-
-    print("\n RAM")
-    for k, v in obtener_ram().items():
-        print(f"{k}: {v}")
-
-    print("\n TARJETA MADRE")
-    for k, v in obtener_motherboard().items():
-        print(f"{k}: {v}")
-
-    print("\n GPU")
-
-    gpus = obtener_gpu()
-
-    if gpus:
-        for gpu in gpus:
-            print("-" * 40)
-            for k, v in gpu.items():
-                print(f"{k}: {v}")
-    else:
-        print("No se detectó GPU dedicada.")
-
-    print("\n DISCOS")
-
-    for disco in obtener_discos():
-        print("-" * 40)
-        for k, v in disco.items():
-            print(f"{k}: {v}")
+def obtener_discos():
+    discos = []
+    for p in psutil.disk_partitions():
+        try:
+            uso = psutil.disk_usage(p.mountpoint)
+            discos.append({
+                "Unidad": p.device,
+                "Capacidad_GB": round(uso.total / (1024**3), 2),
+                "Uso_Porcentaje": uso.percent
+            })
+        except:
+            continue
+    return discos
 
 
-def escanear():
-    resultado.delete("1.0", tk.END)
-
+def guardar_hardware():
     datos = {
         "Sistema": obtener_sistema(),
         "CPU": obtener_cpu(),
@@ -165,8 +89,35 @@ def escanear():
         "Discos": obtener_discos()
     }
 
-    with open("hardware.json", "w", encoding="utf-8") as archivo:
-        json.dump(datos, archivo, indent=4, ensure_ascii=False)
+    with open("hardware.json", "w", encoding="utf-8") as f:
+        json.dump(datos, f, indent=4, ensure_ascii=False)
+
+    return datos
+
+
+def ejecutar_engine(presupuesto):
+
+    resultado.insert(tk.END, "\nEjecutando análisis de recomendaciones...\n")
+
+    try:
+        subprocess.run([
+            sys.executable,
+            "upgrade_engine.py",
+            str(presupuesto)
+        ], check=True)
+
+        resultado.insert(tk.END, "\nresultados.json generado correctamente\n")
+
+    except subprocess.CalledProcessError:
+        resultado.insert(tk.END, "\nError al ejecutar upgrade_engine.py\n")
+
+
+def escanear():
+    resultado.delete("1.0", tk.END)
+
+    datos = guardar_hardware()
+
+    resultado.insert(tk.END, "\nESCANEO COMPLETADO\n")
 
     for categoria, info in datos.items():
         resultado.insert(tk.END, f"\n===== {categoria} =====\n")
@@ -179,58 +130,52 @@ def escanear():
             for item in info:
                 resultado.insert(tk.END, f"{item}\n")
 
+    pedir_presupuesto()
+
+
+def pedir_presupuesto():
+    top = tk.Toplevel(ventana)
+    top.title("Presupuesto")
+    top.geometry("300x150")
+
+    tk.Label(top, text="Presupuesto (MXN):").pack(pady=10)
+
+    entry = tk.Entry(top)
+    entry.pack()
+
+    def confirmar():
+        if not entry.get().isdigit():
+            return
+
+        presupuesto = int(entry.get())
+        top.destroy()
+
+        ejecutar_engine(presupuesto)
+
+    tk.Button(top, text="Continuar", command=confirmar).pack(pady=10)
+
+
 ventana = tk.Tk()
 ventana.title("PC Hardware Scanner")
 ventana.geometry("900x600")
 ventana.resizable(False, False)
 
-# Barra superior tipo WinRAR
 barra = tk.Frame(ventana, bg="#E5E5E5", height=40)
 barra.pack(fill="x")
 
-ttk.Button(barra, text="Escanear", command=escanear).pack(
-    side="left", padx=5, pady=5
-)
+ttk.Button(barra, text="Escanear", command=escanear).pack(side="left", padx=5, pady=5)
+ttk.Button(barra, text="Guardar").pack(side="left", padx=5, pady=5)
+ttk.Button(barra, text="Acerca de").pack(side="left", padx=5, pady=5)
 
-ttk.Button(barra, text="Guardar").pack(
-    side="left", padx=5, pady=5
-)
-
-ttk.Button(barra, text="Acerca de").pack(
-    side="left", padx=5, pady=5
-)
-
-# Panel lateral
 panel = tk.Frame(ventana, width=200, bg="#F0F0F0")
 panel.pack(side="left", fill="y")
 
-tk.Label(
-    panel,
-    text="Componentes",
-    bg="#F0F0F0",
-    font=("Segoe UI", 10, "bold")
-).pack(pady=10)
+tk.Label(panel, text="Componentes", bg="#F0F0F0").pack(pady=10)
 
-for item in [
-    "Sistema",
-    "CPU",
-    "RAM",
-    "GPU",
-    "Motherboard",
-    "Discos"
-]:
+for item in ["Sistema", "CPU", "RAM", "GPU", "Motherboard", "Discos"]:
     tk.Button(panel, text=item, width=20).pack(pady=2)
 
-# Área principal
-resultado = tk.Text(
-    ventana,
-    font=("Consolas", 10)
-)
-
-resultado.pack(
-    side="right",
-    fill="both",
-    expand=True
-)
+resultado = tk.Text(ventana, font=("Consolas", 10))
+resultado.pack(side="right", fill="both", expand=True)
 
 ventana.mainloop()
