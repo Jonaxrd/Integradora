@@ -1,532 +1,516 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Hardware Scanner</title>
+<title>SCOPE | Tu computadora siempre en su mejor versión</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
 
-:root{
-    --bg:#0f172a;
-    --card:#1e293b;
-    --card-hover:#273549;
-    --primary:#38bdf8;
-    --text:#ffffff;
-    --secondary:#94a3b8;
-    --success:#22c55e;
-    --warning:#f59e0b;
-    --danger:#ef4444;
-}
-
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Segoe UI',sans-serif;
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Poppins,sans-serif;
+scroll-behavior:smooth;
 }
 
 body{
-    background:linear-gradient(135deg,#020617,#0f172a);
-    color:var(--text);
-    min-height:100vh;
-    padding:30px;
+
+background:#050505;
+color:white;
+
+}
+
+body::before{
+
+content:"";
+position:fixed;
+width:100%;
+height:100%;
+background:
+
+radial-gradient(circle at top,#1b4fff55,transparent 40%),
+radial-gradient(circle at bottom,#0d2fa955,transparent 35%);
+
+z-index:-1;
+
 }
 
 header{
-    text-align:center;
-    margin-bottom:30px;
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:25px 10%;
+position:fixed;
+width:100%;
+background:rgba(0,0,0,.75);
+backdrop-filter:blur(12px);
+z-index:1000;
+
 }
 
-header h1{
-    font-size:2.5rem;
-    margin-bottom:10px;
+.logo{
+
+font-size:34px;
+font-weight:800;
+color:#2d74ff;
+
 }
 
-header p{
-    color:var(--secondary);
+.logo span{
+
+color:white;
+
 }
 
-.btn-scan{
-    display:block;
-    margin:25px auto;
-    padding:14px 35px;
-    border:none;
-    border-radius:12px;
-    background:var(--primary);
-    color:#000;
-    font-weight:bold;
-    cursor:pointer;
-    transition:.3s;
+nav a{
+
+color:white;
+text-decoration:none;
+margin-left:35px;
+transition:.3s;
+
 }
 
-.btn-scan:hover{
-    transform:translateY(-2px);
+nav a:hover{
+
+color:#2d74ff;
+
 }
 
-#estado{
-    text-align:center;
-    margin-bottom:20px;
-    color:var(--secondary);
+.hero{
+
+min-height:100vh;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:0 10%;
+gap:60px;
+
 }
 
-.dashboard{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(350px,1fr));
-    gap:20px;
+.hero-text{
+
+max-width:550px;
+
+}
+
+.hero-text h1{
+
+font-size:65px;
+line-height:70px;
+margin-bottom:25px;
+
+}
+
+.hero-text h1 span{
+
+color:#2d74ff;
+
+}
+
+.hero-text p{
+
+font-size:18px;
+color:#c8c8c8;
+margin-bottom:35px;
+
+}
+
+.btn{
+
+display:inline-block;
+padding:16px 40px;
+background:#2d74ff;
+color:white;
+text-decoration:none;
+border-radius:40px;
+font-weight:bold;
+transition:.3s;
+box-shadow:0 0 20px #2d74ff;
+
+}
+
+.btn:hover{
+
+transform:translateY(-4px);
+box-shadow:0 0 40px #2d74ff;
+
+}
+
+.hero img{
+
+width:550px;
+filter:drop-shadow(0 0 35px #2d74ff);
+
+}
+
+section{
+
+padding:100px 10%;
+
+}
+
+.title{
+
+font-size:45px;
+margin-bottom:60px;
+text-align:center;
+
+}
+
+.title span{
+
+color:#2d74ff;
+
+}
+
+.cards{
+
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+gap:30px;
+
 }
 
 .card{
-    background:rgba(30,41,59,.9);
-    border-radius:18px;
-    padding:20px;
-    border:1px solid rgba(255,255,255,.05);
-    transition:.3s;
+
+background:#111;
+padding:40px;
+border-radius:18px;
+transition:.4s;
+border:1px solid #1f1f1f;
+
 }
 
 .card:hover{
-    background:var(--card-hover);
+
+transform:translateY(-10px);
+box-shadow:0 0 35px #2d74ff66;
+border-color:#2d74ff;
+
 }
 
 .card h2{
-    color:var(--primary);
-    margin-bottom:15px;
-    font-size:1.2rem;
+
+font-size:24px;
+margin-bottom:15px;
+
 }
 
-.item{
-    margin-bottom:12px;
+.card p{
+
+color:#bdbdbd;
+line-height:28px;
+
 }
 
-.item strong{
-    display:block;
-    margin-bottom:3px;
+.dashboard{
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:70px;
+flex-wrap:wrap;
+
 }
 
-.progress{
-    width:100%;
-    height:12px;
-    background:#334155;
-    border-radius:10px;
-    overflow:hidden;
-    margin-top:8px;
+.dashboard img{
+
+width:480px;
+border-radius:20px;
+box-shadow:0 0 30px #2d74ff55;
+
 }
 
-.progress-bar{
-    height:100%;
-    background:var(--primary);
+.dashboard-text{
+
+max-width:500px;
+
 }
 
-.health-score{
-    text-align:center;
+.dashboard-text h2{
+
+font-size:45px;
+margin-bottom:20px;
+
 }
 
-.health-score h1{
-    font-size:4rem;
+.dashboard-text p{
+
+line-height:30px;
+color:#c7c7c7;
+
 }
 
-.health-score p{
-    font-size:1.1rem;
-    color:var(--secondary);
+.price{
+
+background:linear-gradient(135deg,#174cff,#08152e);
+padding:60px;
+border-radius:25px;
+text-align:center;
+
 }
 
-.recomendacion{
-    background:#334155;
-    padding:15px;
-    border-radius:12px;
-    margin-bottom:12px;
-    cursor:pointer;
-    transition:.3s;
+.old{
+
+font-size:35px;
+text-decoration:line-through;
+opacity:.5;
+
 }
 
-.recomendacion:hover{
-    background:#475569;
+.new{
+
+font-size:75px;
+font-weight:bold;
+margin:15px 0;
+color:white;
+
 }
 
-.detalle{
-    display:none;
-    margin-top:10px;
-    color:#cbd5e1;
-    line-height:1.6;
+.discount{
+
+font-size:22px;
+
 }
 
-.badge{
-    display:inline-block;
-    padding:5px 10px;
-    border-radius:20px;
-    font-size:.8rem;
-    margin-bottom:10px;
+footer{
+
+padding:50px;
+text-align:center;
+background:#080808;
+margin-top:100px;
+color:#888;
+
 }
 
-.alta{
-    background:#7f1d1d;
+@media(max-width:900px){
+
+.hero{
+
+flex-direction:column;
+justify-content:center;
+text-align:center;
+padding-top:120px;
+
 }
 
-.media{
-    background:#78350f;
+.hero img{
+
+width:90%;
+
 }
 
-.baja{
-    background:#14532d;
+.hero-text h1{
+
+font-size:50px;
+line-height:55px;
+
+}
+
+header{
+
+padding:20px;
+
+}
+
+nav{
+
+display:none;
+
+}
+
+.dashboard{
+
+justify-content:center;
+
+}
+
 }
 
 </style>
+
 </head>
+
 <body>
 
 <header>
-    <h1>Hardware Scanner</h1>
-    <p>Diagnóstico y recomendaciones de actualización de hardware</p>
+
+<div class="logo">S<span>COPE</span></div>
+
+<nav>
+
+<a href="#">Inicio</a>
+<a href="#funciones">Funciones</a>
+<a href="#dashboard">Dashboard</a>
+<a href="#precio">Precio</a>
+<a href="pwa.html">PWA</a>
+
+
+</nav>
+
 </header>
 
-<button class="btn-scan" onclick="cargarDatos()">
-Analizar Equipo
-</button>
+<section class="hero">
 
-<div id="estado">
-Esperando análisis...
+<div class="hero-text">
+
+<h1>Tu computadora <span>siempre</span> en su mejor versión.</h1>
+
+<p>
+
+SCOPE monitorea el estado de tu computadora en tiempo real,
+detecta posibles fallas antes de que ocurran y recomienda
+acciones para mejorar el rendimiento de tu equipo.
+
+</p>
+
+<a href="#" class="btn">Descargar ahora</a>
+
 </div>
+
+<img src="img/laptop.png">
+
+</section>
+
+<section id="funciones">
+
+<h1 class="title">¿Por qué elegir <span>SCOPE</span>?</h1>
+
+<div class="cards">
+
+<div class="card">
+
+<h2>Optimiza</h2>
+
+<p>
+
+Mejora el rendimiento de Windows mediante recomendaciones inteligentes.
+
+</p>
+
+</div>
+
+<div class="card">
+
+<h2>Monitorea</h2>
+
+<p>
+
+Visualiza CPU, RAM, disco duro y temperatura en tiempo real.
+
+</p>
+
+</div>
+
+<div class="card">
+
+<h2>Alerta</h2>
+
+<p>
+
+Recibe notificaciones antes de que aparezcan problemas críticos.
+
+</p>
+
+</div>
+
+<div class="card">
+
+<h2>Mejora</h2>
+
+<p>
+
+Obtén sugerencias para actualizar hardware y mantener tu equipo estable.
+
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+<section id="dashboard">
 
 <div class="dashboard">
 
-<div class="card">
-    <h2>Estado General</h2>
-    <div id="saludEquipo" class="health-score">
-        Esperando análisis...
-    </div>
-</div>
+<img src="img/dashboard.png">
 
-<div class="card">
-    <h2>Sistema</h2>
-    <div id="sistema"></div>
-</div>
+<div class="dashboard-text">
 
-<div class="card">
-    <h2>Procesador</h2>
-    <div id="cpu"></div>
-</div>
+<h2>Monitoreo Inteligente</h2>
 
-<div class="card">
-    <h2>Memoria RAM</h2>
-    <div id="ram"></div>
-</div>
+<p>
 
-<div class="card">
-    <h2>Tarjeta Madre</h2>
-    <div id="motherboard"></div>
-</div>
+Consulta el estado general de tu computadora mediante una interfaz moderna y sencilla.
 
-<div class="card">
-    <h2>Tarjeta Gráfica</h2>
-    <div id="gpu"></div>
-</div>
+Obtén un porcentaje de salud del sistema, revisa el uso del procesador, memoria RAM,
+temperatura y almacenamiento desde un solo lugar.
 
-<div class="card">
-    <h2>Almacenamiento</h2>
-    <div id="discos"></div>
-</div>
+SCOPE analiza continuamente tu equipo para ayudarte a prevenir fallas antes de que afecten tu productividad.
 
-<div class="card">
-    <h2>Recomendaciones</h2>
-    <div id="recomendaciones"></div>
+</p>
+
 </div>
 
 </div>
 
-<script>
+</section>
 
-async function cargarDatos(){
+<section id="precio">
 
-    document.getElementById("estado").innerHTML =
-    "Analizando hardware...";
+<div class="price">
 
-    try{
+<h2>Promoción de Lanzamiento</h2>
 
-        const response = await fetch("hardware.json");
-        const datos = await response.json();
+<div class="old">$250 MXN</div>
 
-        mostrarObjeto("sistema", datos.Sistema);
-        mostrarObjeto("cpu", datos.CPU);
-        mostrarRAM(datos.RAM);
-        mostrarObjeto("motherboard", datos.Motherboard);
-        mostrarGPU(datos.GPU);
-        mostrarDiscos(datos.Discos);
+<div class="new">$199 MXN</div>
 
-        calcularSalud(datos);
-        generarRecomendaciones(datos);
+<p class="discount">
 
-        document.getElementById("estado").innerHTML =
-        "Análisis completado";
+20% de descuento durante los primeros 30 días.
 
-    }catch(error){
+</p>
 
-        document.getElementById("estado").innerHTML =
-        "No se pudo cargar hardware.json";
+<br>
 
-        console.error(error);
-    }
-}
+<a href="#" class="btn">Comprar Ahora</a>
 
-function mostrarObjeto(id,objeto){
+</div>
 
-    let html="";
+</section>
 
-    for(let clave in objeto){
+<footer>
 
-        html+=`
-        <div class="item">
-            <strong>${clave}</strong>
-            ${objeto[clave]}
-        </div>`;
-    }
+<h2>SCOPE</h2>
 
-    document.getElementById(id).innerHTML=html;
-}
+<br>
 
-function mostrarRAM(ram){
+<p>
 
-    document.getElementById("ram").innerHTML=`
+Optimiza • Monitorea • Alerta • Mejora
 
-        <div class="item">
-            <strong>Total</strong>
-            ${ram.RAM_Total_GB} GB
-        </div>
+</p>
 
-        <div class="item">
-            <strong>Uso</strong>
-            ${ram.Uso_RAM_Porcentaje}%
+<br>
 
-            <div class="progress">
-                <div class="progress-bar"
-                     style="width:${ram.Uso_RAM_Porcentaje}%">
-                </div>
-            </div>
-        </div>
-    `;
-}
+<p>
 
-function mostrarGPU(gpus){
+© 2026 SCOPE. Todos los derechos reservados.
 
-    let html="";
+</p>
 
-    if(gpus.length===0){
-
-        html=`
-        <div class="item">
-            No se detectó una GPU dedicada.
-        </div>
-        `;
-
-    }else{
-
-        gpus.forEach(gpu=>{
-
-            html+=`
-            <div class="item">
-                <strong>${gpu.Nombre}</strong>
-            </div>
-            `;
-        });
-    }
-
-    document.getElementById("gpu").innerHTML=html;
-}
-
-function mostrarDiscos(discos){
-
-    let html="";
-
-    discos.forEach(disco=>{
-
-        html+=`
-
-        <div class="item">
-
-            <strong>${disco.Unidad}</strong>
-
-            Capacidad: ${disco.Capacidad_GB} GB
-
-            <div class="progress">
-                <div class="progress-bar"
-                     style="width:${disco.Uso_Porcentaje}%">
-                </div>
-            </div>
-
-            Uso: ${disco.Uso_Porcentaje}%
-
-        </div>
-        `;
-    });
-
-    document.getElementById("discos").innerHTML=html;
-}
-
-function calcularSalud(datos){
-
-    let score=100;
-
-    if(datos.CPU.Nucleos_Fisicos<=2)
-        score-=25;
-
-    if(datos.RAM.Uso_RAM_Porcentaje>80)
-        score-=15;
-
-    if(datos.GPU.length===0)
-        score-=25;
-
-    if(datos.Discos[0].Uso_Porcentaje>80)
-        score-=15;
-
-    let estado="Excelente";
-    let color="#22c55e";
-
-    if(score<80){
-        estado="Bueno";
-        color="#f59e0b";
-    }
-
-    if(score<60){
-        estado="Requiere mejoras";
-        color="#ef4444";
-    }
-
-    document.getElementById("saludEquipo").innerHTML=`
-        <h1 style="color:${color}">
-            ${score}
-        </h1>
-
-        <p>${estado}</p>
-    `;
-}
-
-function toggle(id){
-
-    const e=document.getElementById(id);
-
-    if(e.style.display==="block"){
-        e.style.display="none";
-    }else{
-        e.style.display="block";
-    }
-}
-
-function generarRecomendaciones(datos){
-
-    let html="";
-
-    if(datos.CPU.Nucleos_Fisicos<=2){
-
-        html+=`
-        <div class="recomendacion"
-             onclick="toggle('cpuRec')">
-
-            <div class="badge alta">
-                Prioridad Alta
-            </div>
-
-            Actualización de Procesador
-
-            <div class="detalle" id="cpuRec">
-
-                Procesador actual:
-                ${datos.CPU.Procesador}
-
-                <br><br>
-
-                Se recomienda un procesador
-                de al menos 4 o 6 núcleos
-                para mejorar el rendimiento general.
-            </div>
-
-        </div>
-        `;
-    }
-
-    if(datos.RAM.Uso_RAM_Porcentaje>80){
-
-        html+=`
-        <div class="recomendacion"
-             onclick="toggle('ramRec')">
-
-            <div class="badge media">
-                Prioridad Media
-            </div>
-
-            Optimización de Memoria
-
-            <div class="detalle" id="ramRec">
-
-                El sistema utiliza
-                ${datos.RAM.Uso_RAM_Porcentaje}% de RAM.
-
-                <br><br>
-
-                Se recomienda ampliar
-                a 16 GB de memoria.
-            </div>
-
-        </div>
-        `;
-    }
-
-    if(datos.GPU.length===0){
-
-        html+=`
-        <div class="recomendacion"
-             onclick="toggle('gpuRec')">
-
-            <div class="badge alta">
-                Prioridad Alta
-            </div>
-
-            Tarjeta Gráfica
-
-            <div class="detalle" id="gpuRec">
-
-                No se detectó una GPU dedicada.
-
-                <br><br>
-
-                Para gaming o diseño se recomienda
-                instalar una GPU dedicada compatible.
-            </div>
-
-        </div>
-        `;
-    }
-
-    if(datos.Discos[0].Uso_Porcentaje>80){
-
-        html+=`
-        <div class="recomendacion"
-             onclick="toggle('ssdRec')">
-
-            <div class="badge media">
-                Prioridad Media
-            </div>
-
-            Almacenamiento
-
-            <div class="detalle" id="ssdRec">
-
-                El disco está al
-                ${datos.Discos[0].Uso_Porcentaje}% de uso.
-
-                <br><br>
-
-                Se recomienda un SSD
-                de mayor capacidad.
-            </div>
-
-        </div>
-        `;
-    }
-
-    document.getElementById("recomendaciones").innerHTML=html;
-}
-
-</script>
+</footer>
 
 </body>
 </html>

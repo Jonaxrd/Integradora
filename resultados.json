@@ -1,0 +1,18 @@
+{
+    "system_profile": {
+        "level": "bajo",
+        "use": "Uso básico / doméstico",
+        "gaming": "No apto para gaming moderno",
+        "recommendation": "Cambio de equipo a mediano plazo"
+    },
+    "budget": 1000,
+    "recommendations": [
+        {
+            "component": "Optimización",
+            "suggestion": "Cerrar programas en segundo plano",
+            "impact": "Mejora ligera sin costo",
+            "cost": 0,
+            "priority": 8
+        }
+    ]
+}
