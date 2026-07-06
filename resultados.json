@@ -5,14 +5,14 @@
         "gaming": "No apto para gaming moderno",
         "recommendation": "Cambio de equipo a mediano plazo"
     },
-    "budget": 15000,
+    "budget": 1000,
     "recommendations": [
         {
-            "component": "Sistema completo",
-            "suggestion": "Cambiar de equipo",
-            "impact": "Salto generacional",
-            "cost": 15000,
-            "priority": 10
+            "component": "Optimización",
+            "suggestion": "Cerrar programas en segundo plano",
+            "impact": "Mejora ligera sin costo",
+            "cost": 0,
+            "priority": 8
         }
     ]
 }

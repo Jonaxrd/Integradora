@@ -12,20 +12,26 @@
     },
     "RAM": {
         "RAM_Total_GB": 13.92,
-        "RAM_Usada_GB": 10.18,
-        "RAM_Libre_GB": 3.74,
-        "Uso_RAM_Porcentaje": 73.1
+        "RAM_Usada_GB": 10.83,
+        "RAM_Libre_GB": 3.09,
+        "Uso_RAM_Porcentaje": 77.8
     },
     "Motherboard": {
         "Fabricante": "HP",
         "Modelo": "8706"
     },
-    "GPU": [],
+    "GPU": [
+        {
+            "Nombre": "AMD Radeon(TM) Graphics",
+            "VRAM_MB": -2048.0,
+            "Driver": "31.0.12044.3"
+        }
+    ],
     "Discos": [
         {
             "Unidad": "C:\\",
             "Capacidad_GB": 237.35,
-            "Uso_Porcentaje": 82.7
+            "Uso_Porcentaje": 92.3
         }
     ]
 }

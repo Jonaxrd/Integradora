@@ -5,7 +5,6 @@ import platform
 import psutil
 import cpuinfo
 import wmi
-import GPUtil
 import subprocess
 import sys
 
@@ -30,17 +29,31 @@ def obtener_ram():
 
 
 def obtener_gpu():
-    gpus = []
     try:
-        for gpu in GPUtil.getGPUs():
+        c = wmi.WMI()
+        gpus = []
+
+        for gpu in c.Win32_VideoController():
+            vram = "Desconocido"
+
+            try:
+                if gpu.AdapterRAM:
+                    vram = round(int(gpu.AdapterRAM) / (1024 * 1024), 2)
+            except:
+                pass
+
             gpus.append({
-                "Nombre": gpu.name,
-                "VRAM_MB": gpu.memoryTotal,
-                "Uso_GPU_Porcentaje": round(gpu.load * 100, 2)
+                "Nombre": gpu.Name,
+                "VRAM_MB": vram,
+                "Driver": gpu.DriverVersion
             })
-    except:
-        pass
-    return gpus
+
+        return gpus
+
+    except Exception as e:
+        return [{
+            "Error": str(e)
+        }]
 
 
 def obtener_motherboard():
