@@ -12,9 +12,9 @@
     },
     "RAM": {
         "RAM_Total_GB": 13.92,
-        "RAM_Usada_GB": 10.83,
-        "RAM_Libre_GB": 3.09,
-        "Uso_RAM_Porcentaje": 77.8
+        "RAM_Usada_GB": 11.63,
+        "RAM_Libre_GB": 2.29,
+        "Uso_RAM_Porcentaje": 83.6
     },
     "Motherboard": {
         "Fabricante": "HP",
@@ -31,7 +31,7 @@
         {
             "Unidad": "C:\\",
             "Capacidad_GB": 237.35,
-            "Uso_Porcentaje": 92.3
+            "Uso_Porcentaje": 93.3
         }
     ]
 }
