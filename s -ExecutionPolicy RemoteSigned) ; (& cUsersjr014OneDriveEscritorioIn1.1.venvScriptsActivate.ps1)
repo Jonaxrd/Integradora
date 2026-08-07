@@ -1,0 +1,133 @@
+[1mdiff --git a/hardware.json b/hardware.json[m
+[1mindex 5d44c07..b83bb5b 100644[m
+[1m--- a/hardware.json[m
+[1m+++ b/hardware.json[m
+[36m@@ -12,9 +12,9 @@[m
+     },[m
+     "RAM": {[m
+         "RAM_Total_GB": 13.92,[m
+[31m-        "RAM_Usada_GB": 10.83,[m
+[31m-        "RAM_Libre_GB": 3.09,[m
+[31m-        "Uso_RAM_Porcentaje": 77.8[m
+[32m+[m[32m        "RAM_Usada_GB": 11.63,[m
+[32m+[m[32m        "RAM_Libre_GB": 2.29,[m
+[32m+[m[32m        "Uso_RAM_Porcentaje": 83.6[m
+     },[m
+     "Motherboard": {[m
+         "Fabricante": "HP",[m
+[36m@@ -31,7 +31,7 @@[m
+         {[m
+             "Unidad": "C:\\",[m
+             "Capacidad_GB": 237.35,[m
+[31m-            "Uso_Porcentaje": 92.3[m
+[32m+[m[32m            "Uso_Porcentaje": 93.3[m
+         }[m
+     ][m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/index.html b/index.html[m
+[1mindex ea39505..5438169 100644[m
+[1m--- a/index.html[m
+[1m+++ b/index.html[m
+[36m@@ -70,6 +70,12 @@[m [mcolor:white;[m
+ [m
+ }[m
+ [m
+[32m+[m[32m.logo img{[m
+[32m+[m
+[32m+[m[32m    height:30px;[m
+[32m+[m
+[32m+[m[32m}[m
+[32m+[m
+ nav a{[m
+ [m
+ color:white;[m
+[36m@@ -344,7 +350,13 @@[m [mjustify-content:center;[m
+ [m
+ <header>[m
+ [m
+[31m-<div class="logo">S<span>COPE</span></div>[m
+[32m+[m[32m<div class="logo">[m
+[32m+[m
+[32m+[m[32m    <img src="img/logo.png" alt="Logo">[m
+[32m+[m
+[32m+[m[32m    <span>SCOPE</span>[m
+[32m+[m
+[32m+[m[32m</div>[m
+ [m
+ <nav>[m
+ [m
+[36m@@ -377,7 +389,7 @@[m [macciones para mejorar el rendimiento de tu equipo.[m
+ [m
+ </div>[m
+ [m
+[31m-<img src="img/laptop.png">[m
+[32m+[m[32m<img src="img/pc.jpg">[m
+ [m
+ </section>[m
+ [m
+[36m@@ -443,7 +455,7 @@[m [mObtén sugerencias para actualizar hardware y mantener tu equipo estable.[m
+ [m
+ <div class="dashboard">[m
+ [m
+[31m-<img src="img/dashboard.png">[m
+[32m+[m[32m<img src="img/dashboard.jpg">[m
+ [m
+ <div class="dashboard-text">[m
+ [m
+[1mdiff --git a/pwa.html b/pwa.html[m
+[1mindex 8550bd8..5879bf0 100644[m
+[1m--- a/pwa.html[m
+[1m+++ b/pwa.html[m
+[36m@@ -137,6 +137,12 @@[m [mheader{[m
+ [m
+ }[m
+ [m
+[32m+[m[32m.logo img{[m
+[32m+[m
+[32m+[m[32m    height:30px;[m
+[32m+[m
+[32m+[m[32m}[m
+[32m+[m
+ .version{[m
+ [m
+     background:#111;[m
+[36m@@ -775,7 +781,11 @@[m [mfooter span{[m
+ <div class="topbar">[m
+ [m
+ <div class="logo">[m
+[31m-S<span>COPE</span>[m
+[32m+[m
+[32m+[m[32m    <img src="img/logo.png" alt="Logo">[m
+[32m+[m
+[32m+[m[32m    <span>SCOPE</span>[m
+[32m+[m
+ </div>[m
+ [m
+ <div class="version">[m
+[1mdiff --git a/resultados.json b/resultados.json[m
+[1mindex 256e838..5557110 100644[m
+[1m--- a/resultados.json[m
+[1m+++ b/resultados.json[m
+[36m@@ -5,14 +5,14 @@[m
+         "gaming": "No apto para gaming moderno",[m
+         "recommendation": "Cambio de equipo a mediano plazo"[m
+     },[m
+[31m-    "budget": 1000,[m
+[32m+[m[32m    "budget": 15000,[m
+     "recommendations": [[m
+         {[m
+[31m-            "component": "Optimización",[m
+[31m-            "suggestion": "Cerrar programas en segundo plano",[m
+[31m-            "impact": "Mejora ligera sin costo",[m
+[31m-            "cost": 0,[m
+[31m-            "priority": 8[m
+[32m+[m[32m            "component": "Sistema completo",[m
+[32m+[m[32m            "suggestion": "Cambiar de equipo",[m
+[32m+[m[32m            "impact": "Salto generacional",[m
+[32m+[m[32m            "cost": 15000,[m
+[32m+[m[32m            "priority": 10[m
+         }[m
+     ][m
+ }[m
+\ No newline at end of file[m

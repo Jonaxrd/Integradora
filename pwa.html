@@ -9,6 +9,11 @@
 <title>SCOPE | Hardware Scanner</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#2563eb">
+
+<link rel="apple-touch-icon" href="img/icon-192.png">
 
 <style>
 
@@ -818,8 +823,15 @@ actualizar tu hardware de forma eficiente.
 Analizar Equipo
 </button>
 
+<input
+    type="file"
+    id="archivoResultados"
+    accept=".json,application/json"
+    style="display:none;"
+>
+
 <div id="estado">
-Esperando análisis...
+Ejecuta SCOPE Scanner y selecciona el archivo de resultados.
 </div>
 
 </div>
@@ -880,44 +892,76 @@ Excelente
 
 <script>
 
-async function cargarResultados(){
+function cargarResultados(){
 
-    const boton=document.querySelector(".btn-scan");
+    const input = document.getElementById("archivoResultados");
 
-    boton.disabled=true;
-    boton.innerHTML="Analizando...";
+    input.value = "";
 
-    document.getElementById("estado").innerHTML="Analizando el equipo...";
-
-    try{
-
-        const response=await fetch("resultados.json");
-        const data=await response.json();
-
-        mostrarSistema(data.system_profile);
-        mostrarPresupuesto(data.budget);
-        mostrarRecomendaciones(data.recommendations);
-
-        actualizarSalud(data.system_profile.level);
-
-        document.getElementById("estado").innerHTML=
-        "Análisis completado correctamente.";
-
-    }
-
-    catch(error){
-
-        console.error(error);
-
-        document.getElementById("estado").innerHTML=
-        "No fue posible cargar resultados.json.";
-
-    }
-
-    boton.disabled=false;
-    boton.innerHTML="Analizar Equipo";
-
+    input.click();
 }
+
+
+document
+    .getElementById("archivoResultados")
+    .addEventListener("change", async function(event){
+
+        const archivo = event.target.files[0];
+
+        if(!archivo){
+            return;
+        }
+
+        const boton = document.querySelector(".btn-scan");
+
+        boton.disabled = true;
+        boton.innerHTML = "Analizando...";
+
+        document.getElementById("estado").innerHTML =
+            "Cargando análisis de SCOPE...";
+
+        try{
+
+            const contenido = await archivo.text();
+
+            const data = JSON.parse(contenido);
+
+            // Validación básica del archivo
+            if(
+                !data.system_profile ||
+                data.budget === undefined ||
+                !Array.isArray(data.recommendations)
+            ){
+                throw new Error(
+                    "El archivo no tiene el formato esperado de SCOPE."
+                );
+            }
+
+            mostrarSistema(data.system_profile);
+
+            mostrarPresupuesto(data.budget);
+
+            mostrarRecomendaciones(data.recommendations);
+
+            actualizarSalud(data.system_profile.level);
+
+            document.getElementById("estado").innerHTML =
+                "Análisis cargado correctamente.";
+
+        }
+        catch(error){
+
+            console.error(error);
+
+            document.getElementById("estado").innerHTML =
+                "El archivo seleccionado no es un resultado válido de SCOPE.";
+
+        }
+
+        boton.disabled = false;
+        boton.innerHTML = "Analizar Equipo";
+
+    });
 
 
 
@@ -1112,6 +1156,26 @@ function mostrarRecomendaciones(recs){
     });
 
     document.getElementById("recomendaciones").innerHTML=html;
+
+}
+
+if ("serviceWorker" in navigator) {
+
+    window.addEventListener("load", () => {
+
+        navigator.serviceWorker
+            .register("./service-worker.js")
+            .then(() => {
+                console.log("SCOPE PWA instalada correctamente");
+            })
+            .catch(error => {
+                console.error(
+                    "Error registrando Service Worker:",
+                    error
+                );
+            });
+
+    });
 
 }
 
