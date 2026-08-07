@@ -31,7 +31,7 @@ COLOR_SUCCESS = "#22C55E"
 COLOR_WARNING = "#F59E0B"
 COLOR_DANGER = "#EF4444"
 
-PWA_URL = "http://127.0.0.1:5500/pwa.html"
+PWA_URL = "https://jonaxrd.github.io/Integradora/pwa.html"
 
 datos_hardware = {}
 datos_resultados = {}
