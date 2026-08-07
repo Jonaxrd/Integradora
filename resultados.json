@@ -1,18 +1,53 @@
 {
     "system_profile": {
         "level": "bajo",
-        "use": "Uso básico / doméstico",
-        "gaming": "No apto para gaming moderno",
-        "recommendation": "Cambio de equipo a mediano plazo"
+        "health": 35,
+        "use": "Uso básico y tareas ligeras",
+        "gaming": "Limitado para videojuegos modernos",
+        "recommendation": "Se recomienda priorizar actualizaciones de hardware"
     },
-    "budget": 15000,
+    "budget": 5000,
+    "hardware_summary": {
+        "cpu": "AMD Athlon Silver 3050U with Radeon Graphics",
+        "ram_gb": 13.92,
+        "ram_usage": 68.5,
+        "gpu": "No disponible",
+        "gpu_vram_mb": 0,
+        "cpu_temperature": "No disponible",
+        "gpu_temperature": "No disponible"
+    },
     "recommendations": [
         {
-            "component": "Sistema completo",
-            "suggestion": "Cambiar de equipo",
-            "impact": "Salto generacional",
-            "cost": 15000,
-            "priority": 10
+            "component": "RAM",
+            "suggestion": "Ampliar la memoria RAM a 16 GB",
+            "impact": "Mejor rendimiento en multitarea, navegación y videojuegos.",
+            "cost": 900,
+            "priority": 9,
+            "reason": "16 GB es un punto recomendado para uso moderno."
+        },
+        {
+            "component": "GPU",
+            "suggestion": "Considerar una tarjeta gráfica dedicada",
+            "impact": "Mayor rendimiento en videojuegos, edición y aplicaciones 3D.",
+            "cost": 4500,
+            "priority": 8,
+            "reason": "GPU detectada: No disponible."
+        },
+        {
+            "component": "Almacenamiento",
+            "suggestion": "Liberar espacio o ampliar almacenamiento",
+            "impact": "Ayuda a mantener el rendimiento y evita falta de espacio.",
+            "cost": 1000,
+            "priority": 8,
+            "reason": "Se detectó una unidad con más del 85% de utilización."
+        },
+        {
+            "component": "Optimización",
+            "suggestion": "Revisar programas que inician con Windows",
+            "impact": "Puede reducir consumo de RAM y mejorar el arranque.",
+            "cost": 0,
+            "priority": 5,
+            "reason": "Optimización de software sin inversión adicional."
         }
     ]
 }

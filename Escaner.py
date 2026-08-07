@@ -5,8 +5,7 @@ import platform
 import psutil
 import cpuinfo
 import wmi
-import subprocess
-import sys
+from upgrade_engine import generar_recomendaciones
 
 
 def obtener_cpu():
@@ -91,6 +90,51 @@ def obtener_discos():
             continue
     return discos
 
+def obtener_temperaturas():
+    temperaturas = {
+        "CPU_C": "No disponible",
+        "GPU_C": "No disponible"
+    }
+
+    # Intento 1: psutil
+    try:
+        sensores = psutil.sensors_temperatures()
+
+        if sensores:
+            for nombre, entradas in sensores.items():
+                for entrada in entradas:
+                    etiqueta = (entrada.label or nombre).lower()
+
+                    if "cpu" in etiqueta or "core" in etiqueta:
+                        temperaturas["CPU_C"] = round(entrada.current, 1)
+
+                    if "gpu" in etiqueta:
+                        temperaturas["GPU_C"] = round(entrada.current, 1)
+
+    except (AttributeError, Exception):
+        pass
+
+    # Intento 2: WMI / ACPI para Windows
+    if temperaturas["CPU_C"] == "No disponible":
+        try:
+            w = wmi.WMI(namespace=r"root\wmi")
+
+            sensores = w.MSAcpi_ThermalZoneTemperature()
+
+            if sensores:
+                valor = sensores[0].CurrentTemperature
+
+                # Valor WMI viene en décimas de Kelvin
+                celsius = (valor / 10.0) - 273.15
+
+                if 0 < celsius < 150:
+                    temperaturas["CPU_C"] = round(celsius, 1)
+
+        except Exception:
+            pass
+
+    return temperaturas
+
 
 def guardar_hardware():
     datos = {
@@ -99,7 +143,8 @@ def guardar_hardware():
         "RAM": obtener_ram(),
         "Motherboard": obtener_motherboard(),
         "GPU": obtener_gpu(),
-        "Discos": obtener_discos()
+        "Discos": obtener_discos(),
+        "Temperaturas": obtener_temperaturas()
     }
 
     with open("hardware.json", "w", encoding="utf-8") as f:
@@ -110,19 +155,90 @@ def guardar_hardware():
 
 def ejecutar_engine(presupuesto):
 
-    resultado.insert(tk.END, "\nEjecutando análisis de recomendaciones...\n")
+    resultado.insert(
+        tk.END,
+        "\nAnalizando hardware y presupuesto...\n"
+    )
 
     try:
-        subprocess.run([
-            sys.executable,
-            "upgrade_engine.py",
-            str(presupuesto)
-        ], check=True)
 
-        resultado.insert(tk.END, "\nresultados.json generado correctamente\n")
+        datos = generar_recomendaciones(
+            presupuesto
+        )
 
-    except subprocess.CalledProcessError:
-        resultado.insert(tk.END, "\nError al ejecutar upgrade_engine.py\n")
+        resultado.insert(
+            tk.END,
+            "\nANÁLISIS COMPLETADO\n"
+        )
+
+        resultado.insert(
+            tk.END,
+            f"\nPresupuesto: ${presupuesto:,} MXN\n"
+        )
+
+        perfil = datos["system_profile"]
+
+        resultado.insert(
+            tk.END,
+            f"Salud estimada: {perfil['health']}%\n"
+        )
+
+        resultado.insert(
+            tk.END,
+            f"Nivel: {perfil['level'].upper()}\n"
+        )
+
+        resultado.insert(
+            tk.END,
+            "\nRECOMENDACIONES\n"
+        )
+
+        for r in datos["recommendations"]:
+
+            resultado.insert(
+                tk.END,
+                f"\n[{r['component']}]\n"
+            )
+
+            resultado.insert(
+                tk.END,
+                f"{r['suggestion']}\n"
+            )
+
+            resultado.insert(
+                tk.END,
+                f"Motivo: {r['reason']}\n"
+            )
+
+            resultado.insert(
+                tk.END,
+                f"Impacto: {r['impact']}\n"
+            )
+
+            costo = r["cost"]
+
+            if costo > 0:
+                resultado.insert(
+                    tk.END,
+                    f"Costo estimado: ${costo:,} MXN\n"
+                )
+            else:
+                resultado.insert(
+                    tk.END,
+                    "Costo estimado: Sin costo\n"
+                )
+
+        resultado.insert(
+            tk.END,
+            "\nresultados.json generado correctamente.\n"
+        )
+
+    except Exception as e:
+
+        resultado.insert(
+            tk.END,
+            f"\nError durante el análisis:\n{e}\n"
+        )
 
 
 def escanear():
@@ -166,6 +282,9 @@ def pedir_presupuesto():
         ejecutar_engine(presupuesto)
 
     tk.Button(top, text="Continuar", command=confirmar).pack(pady=10)
+    
+
+
 
 
 ventana = tk.Tk()
@@ -185,8 +304,17 @@ panel.pack(side="left", fill="y")
 
 tk.Label(panel, text="Componentes", bg="#F0F0F0").pack(pady=10)
 
-for item in ["Sistema", "CPU", "RAM", "GPU", "Motherboard", "Discos"]:
+for item in [
+    "Sistema",
+    "CPU",
+    "RAM",
+    "GPU",
+    "Motherboard",
+    "Discos",
+    "Temperaturas"
+]:
     tk.Button(panel, text=item, width=20).pack(pady=2)
+
 
 resultado = tk.Text(ventana, font=("Consolas", 10))
 resultado.pack(side="right", fill="both", expand=True)
