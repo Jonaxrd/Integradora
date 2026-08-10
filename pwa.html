@@ -266,6 +266,218 @@ header{
 
 }
 
+.product-recommendation {
+    background: #111111;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 18px;
+    overflow: hidden;
+}
+
+.recommendation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.component-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.priority {
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.priority-high {
+    background: rgba(239, 68, 68, 0.14);
+    color: #ef4444;
+}
+
+.priority-medium {
+    background: rgba(245, 158, 11, 0.14);
+    color: #f59e0b;
+}
+
+.priority-low {
+    background: rgba(37, 99, 235, 0.14);
+    color: #60a5fa;
+}
+
+.product-container {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 14px;
+    align-items: center;
+
+    background: #171717;
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 14px;
+}
+
+.product-image-container {
+    width: 90px;
+    height: 90px;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 8px;
+}
+
+.product-image-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #161616;
+    color: #777777;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 10px;
+    text-align: center;
+    padding: 8px;
+}
+
+.product-info {
+    min-width: 0;
+}
+
+.product-name {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.35;
+    margin-bottom: 3px;
+}
+
+.product-brand {
+    color: #8f9bb3;
+    font-size: 11px;
+    margin-bottom: 6px;
+}
+
+.product-price {
+    color: #3b82f6;
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 3px;
+}
+
+.product-store {
+    color: #94a3b8;
+    font-size: 10px;
+}
+
+.recommendation-section {
+    margin-top: 12px;
+}
+
+.recommendation-label {
+    color: #3b82f6;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 4px;
+}
+
+.recommendation-text {
+    color: #cbd5e1;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.product-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+
+    margin-top: 16px;
+}
+
+.estimated-cost {
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+.product-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 9px 14px;
+
+    border-radius: 9px;
+
+    background: linear-gradient(
+        135deg,
+        #2563eb,
+        #3b82f6
+    );
+
+    color: #ffffff;
+    text-decoration: none;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    transition: 0.2s ease;
+}
+
+.product-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+.no-product {
+    background: #151515;
+    border-radius: 12px;
+    padding: 14px;
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+@media (max-width: 700px) {
+    .product-container {
+        grid-template-columns: 1fr;
+    }
+
+    .product-image-container {
+        width: 100%;
+        height: 160px;
+    }
+
+    .product-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .product-button {
+        width: 100%;
+    }
+}
+
 .btn-scan{
 
     display:inline-flex;
@@ -710,6 +922,347 @@ body{
 
 }
 
+.product-recommendation {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(18, 18, 18, .98),
+            rgba(10, 15, 28, .98)
+        );
+
+    border: 1px solid rgba(59, 130, 246, .20);
+    border-radius: 20px;
+
+    padding: 22px;
+
+    margin-bottom: 20px;
+
+    transition: .3s;
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, .25);
+}
+
+.product-recommendation:hover {
+    transform: translateY(-4px);
+
+    border-color:
+        rgba(59, 130, 246, .60);
+
+    box-shadow:
+        0 15px 40px rgba(37, 99, 235, .18);
+}
+
+
+.recommendation-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 18px;
+}
+
+
+.component-title {
+    font-size: 18px;
+    font-weight: 700;
+
+    color: #ffffff;
+}
+
+
+.priority {
+    padding: 6px 12px;
+
+    border-radius: 50px;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+
+.priority-high {
+    background:
+        rgba(239, 68, 68, .15);
+
+    color: #ef4444;
+
+    border:
+        1px solid rgba(239, 68, 68, .25);
+}
+
+
+.priority-medium {
+    background:
+        rgba(245, 158, 11, .15);
+
+    color: #f59e0b;
+
+    border:
+        1px solid rgba(245, 158, 11, .25);
+}
+
+
+.priority-low {
+    background:
+        rgba(37, 99, 235, .15);
+
+    color: #60a5fa;
+
+    border:
+        1px solid rgba(37, 99, 235, .25);
+}
+
+
+.product-container {
+    display: flex;
+
+    gap: 20px;
+
+    align-items: center;
+
+    background:
+        rgba(255, 255, 255, .025);
+
+    border:
+        1px solid rgba(255, 255, 255, .05);
+
+    border-radius: 16px;
+
+    padding: 16px;
+
+    margin-bottom: 18px;
+}
+
+
+.product-image-container {
+    width: 115px;
+    height: 115px;
+
+    min-width: 115px;
+
+    background: #ffffff;
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+
+.product-image {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    padding: 8px;
+}
+
+
+.product-image-placeholder {
+    width: 100%;
+    height: 100%;
+
+    background: #151515;
+
+    color: #697386;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 12px;
+
+    text-align: center;
+
+    padding: 10px;
+}
+
+
+.product-info {
+    flex: 1;
+}
+
+
+.product-name {
+    font-size: 17px;
+    font-weight: 700;
+
+    color: #ffffff;
+
+    margin-bottom: 5px;
+}
+
+
+.product-brand {
+    color: #94a3b8;
+
+    font-size: 13px;
+
+    margin-bottom: 8px;
+}
+
+
+.product-price {
+    color: #3b82f6;
+
+    font-size: 25px;
+    font-weight: 800;
+
+    margin-bottom: 5px;
+}
+
+
+.product-store {
+    color: #94a3b8;
+
+    font-size: 12px;
+}
+
+
+.recommendation-section {
+    margin-top: 15px;
+}
+
+
+.recommendation-label {
+    color: #3b82f6;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: .8px;
+
+    margin-bottom: 5px;
+}
+
+
+.recommendation-text {
+    color: #cbd5e1;
+
+    font-size: 14px;
+
+    line-height: 24px;
+}
+
+
+.product-actions {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-top: 20px;
+}
+
+
+.estimated-cost {
+    color: #94a3b8;
+
+    font-size: 13px;
+}
+
+
+.product-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 11px 22px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6
+        );
+
+    color: #ffffff;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition: .25s;
+
+    box-shadow:
+        0 6px 18px rgba(37, 99, 235, .25);
+}
+
+
+.product-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 25px rgba(37, 99, 235, .4);
+}
+
+
+.no-product {
+    padding: 15px;
+
+    background:
+        rgba(255, 255, 255, .025);
+
+    border-radius: 12px;
+
+    color: #94a3b8;
+
+    font-size: 13px;
+
+    margin-top: 15px;
+}
+
+
+@media(max-width: 650px) {
+
+    .product-container {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+
+    .product-image-container {
+        width: 100%;
+        height: 180px;
+    }
+
+
+    .product-actions {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .product-button {
+        width: 100%;
+    }
+
+}
+
 .card{
 
     padding:20px;
@@ -1099,64 +1652,194 @@ function mostrarPresupuesto(budget){
 
 
 
-function mostrarRecomendaciones(recs){
+function mostrarRecomendaciones(recs) {
 
-    let html="";
+    const contenedor = document.getElementById("recomendaciones");
 
-    recs.forEach(r=>{
+    if (!recs || recs.length === 0) {
 
-        let badge="baja";
-
-        if(r.priority>=9){
-
-            badge="alta";
-
-        }
-
-        else if(r.priority>=7){
-
-            badge="media";
-
-        }
-
-        html+=`
-
-        <div class="recomendacion">
-
-            <div class="badge ${badge}">
-
-                ${r.component}
-
+        contenedor.innerHTML = `
+            <div class="no-product">
+                No se encontraron recomendaciones para este análisis.
             </div>
-
-            <strong>
-
-                ${r.suggestion}
-
-            </strong>
-
-            <div class="detalle">
-
-                ${r.impact}
-
-                <br><br>
-
-                <strong>
-
-                ${r.cost ? "$"+r.cost+" MXN" : "Sin costo"}
-
-                </strong>
-
-            </div>
-
-        </div>
-
         `;
 
+        return;
+    }
+
+    let html = "";
+
+    recs.forEach(r => {
+
+        let priorityClass = "priority-low";
+        let priorityText = "Prioridad baja";
+
+        if (r.priority >= 9) {
+            priorityClass = "priority-high";
+            priorityText = "Prioridad alta";
+        }
+        else if (r.priority >= 7) {
+            priorityClass = "priority-medium";
+            priorityText = "Prioridad media";
+        }
+
+        const producto = r.product;
+
+        let productoHTML = "";
+        let botonProducto = "";
+
+        if (producto) {
+
+            let imagenHTML = `
+                <div class="product-image-placeholder">
+                    Imagen no disponible
+                </div>
+            `;
+
+            if (producto.imagen_url) {
+
+                imagenHTML = `
+                    <img
+                        src="${producto.imagen_url}"
+                        alt="${producto.nombre || "Producto recomendado"}"
+                        class="product-image"
+                        onerror="
+                            this.style.display='none';
+                            this.nextElementSibling.style.display='flex';
+                        "
+                    >
+
+                    <div
+                        class="product-image-placeholder"
+                        style="display:none;"
+                    >
+                        Imagen no disponible
+                    </div>
+                `;
+            }
+
+            const precioProducto = producto.precio_mxn
+                ? Number(producto.precio_mxn).toLocaleString("es-MX")
+                : "No disponible";
+
+            productoHTML = `
+                <div class="product-container">
+
+                    <div class="product-image-container">
+                        ${imagenHTML}
+                    </div>
+
+                    <div class="product-info">
+
+                        <div class="product-name">
+                            ${producto.nombre || "Producto recomendado"}
+                        </div>
+
+                        <div class="product-brand">
+                            ${producto.marca || ""}
+                        </div>
+
+                        <div class="product-price">
+                            $${precioProducto} MXN
+                        </div>
+
+                        <div class="product-store">
+                            ${producto.tienda || "Tienda no especificada"}
+                        </div>
+
+                    </div>
+
+                </div>
+            `;
+
+            if (producto.compra_url) {
+
+                botonProducto = `
+                    <a
+                        href="${producto.compra_url}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="product-button"
+                    >
+                        Ver producto
+                    </a>
+                `;
+            }
+        }
+
+        const costo = r.cost
+            ? `$${Number(r.cost).toLocaleString("es-MX")} MXN`
+            : "Sin costo";
+
+        html += `
+            <div class="product-recommendation">
+
+                <div class="recommendation-header">
+
+                    <div class="component-title">
+                        ${r.component}
+                    </div>
+
+                    <div class="priority ${priorityClass}">
+                        ${priorityText}
+                    </div>
+
+                </div>
+
+                ${productoHTML}
+
+                <div class="recommendation-section">
+
+                    <div class="recommendation-label">
+                        Recomendación
+                    </div>
+
+                    <div class="recommendation-text">
+                        ${r.suggestion || "No disponible"}
+                    </div>
+
+                </div>
+
+                <div class="recommendation-section">
+
+                    <div class="recommendation-label">
+                        Motivo
+                    </div>
+
+                    <div class="recommendation-text">
+                        ${r.reason || "No disponible"}
+                    </div>
+
+                </div>
+
+                <div class="recommendation-section">
+
+                    <div class="recommendation-label">
+                        Impacto esperado
+                    </div>
+
+                    <div class="recommendation-text">
+                        ${r.impact || "No disponible"}
+                    </div>
+
+                </div>
+
+                <div class="product-actions">
+
+                    <div class="estimated-cost">
+                        Costo estimado:
+                        <strong>${costo}</strong>
+                    </div>
+
+                    ${botonProducto}
+
+                </div>
+
+            </div>
+        `;
     });
 
-    document.getElementById("recomendaciones").innerHTML=html;
-
+    contenedor.innerHTML = html;
 }
 
 if ("serviceWorker" in navigator) {

@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['Escaner.py'],
+    ['Escaner_v2.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -35,4 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=['img\\scope.ico'],
 )

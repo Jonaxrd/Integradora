@@ -6,11 +6,11 @@
         "gaming": "Limitado para videojuegos modernos",
         "recommendation": "Se recomienda priorizar actualizaciones de hardware"
     },
-    "budget": 5000,
+    "budget": 6000,
     "hardware_summary": {
         "cpu": "AMD Athlon Silver 3050U with Radeon Graphics",
         "ram_gb": 13.92,
-        "ram_usage": 68.5,
+        "ram_usage": 71.1,
         "gpu": "No disponible",
         "gpu_vram_mb": 0,
         "cpu_temperature": "No disponible",
@@ -19,11 +19,58 @@
     "recommendations": [
         {
             "component": "RAM",
-            "suggestion": "Ampliar la memoria RAM a 16 GB",
-            "impact": "Mejor rendimiento en multitarea, navegación y videojuegos.",
-            "cost": 900,
+            "suggestion": "Ampliar memoria RAM a mínimo 16 GB",
+            "impact": "Mejorará el rendimiento en multitarea y aplicaciones modernas.",
+            "cost": 2339,
             "priority": 9,
-            "reason": "16 GB es un punto recomendado para uso moderno."
+            "reason": "El equipo tiene aproximadamente 13.92 GB de memoria RAM.",
+            "product": {
+                "nombre": "Kingston Fury Beast RGB 16GB DDR4 3200MHz",
+                "marca": "Kingston",
+                "tipo": "RAM",
+                "tecnologia": "DDR4",
+                "capacidad_gb": 16,
+                "frecuencia_mhz": 3200,
+                "precio_mxn": 2339,
+                "nivel_rendimiento": 74,
+                "descripcion": "Memoria DDR4 de 16 GB con iluminación RGB orientada a equipos gaming.",
+                "compatibilidad": {
+                    "tecnologia": "DDR4",
+                    "formato": "DIMM"
+                },
+                "imagen_url": "https://http2.mlstatic.com/D_NQ_NP_2X_699633-MLU73802925705_012024-F.webp",
+                "compra_url": "https://www.mercadolibre.com.mx/memoria-ram-kingston-fury-beast-rgb-ddr4-16gb-3200-mts/up/MLMU3045022597",
+                "tienda": "Mercado Libre",
+                "stock": true,
+                "activo": true
+            }
+        },
+        {
+            "component": "CPU",
+            "suggestion": "Considerar una plataforma con procesador más moderno",
+            "impact": "Mejorará el rendimiento general y reducirá cuellos de botella.",
+            "cost": 3714,
+            "priority": 9,
+            "reason": "Procesador detectado: AMD Athlon Silver 3050U with Radeon Graphics.",
+            "product": {
+                "nombre": "AMD Ryzen 5 7600X",
+                "marca": "AMD",
+                "tipo": "CPU",
+                "socket": "AM5",
+                "nucleos": 6,
+                "hilos": 12,
+                "precio_mxn": 3714,
+                "nivel_rendimiento": 89,
+                "descripcion": "Procesador Ryzen 5 de generación AM5, orientado a plataformas modernas.",
+                "compatibilidad": {
+                    "socket": "AM5"
+                },
+                "imagen_url": "https://http2.mlstatic.com/D_NQ_NP_2X_652899-MLU75209627680_032024-F.webp",
+                "compra_url": "https://listado.mercadolibre.com.mx/ryzen-5-7600",
+                "tienda": "Mercado Libre",
+                "stock": true,
+                "activo": true
+            }
         },
         {
             "component": "GPU",
@@ -31,15 +78,35 @@
             "impact": "Mayor rendimiento en videojuegos, edición y aplicaciones 3D.",
             "cost": 4500,
             "priority": 8,
-            "reason": "GPU detectada: No disponible."
+            "reason": "GPU detectada: No disponible.",
+            "product": null
         },
         {
             "component": "Almacenamiento",
             "suggestion": "Liberar espacio o ampliar almacenamiento",
             "impact": "Ayuda a mantener el rendimiento y evita falta de espacio.",
-            "cost": 1000,
+            "cost": 3799,
             "priority": 8,
-            "reason": "Se detectó una unidad con más del 85% de utilización."
+            "reason": "Se detectó una unidad con más del 85% de utilización.",
+            "product": {
+                "nombre": "Kingston NV3 1TB NVMe",
+                "marca": "Kingston",
+                "tipo": "SSD",
+                "interfaz": "NVMe",
+                "capacidad_gb": 1000,
+                "precio_mxn": 3799,
+                "nivel_rendimiento": 78,
+                "descripcion": "SSD NVMe PCIe 4.0 de 1 TB orientado a mejorar tiempos de arranque, carga y transferencia.",
+                "compatibilidad": {
+                    "interfaz": "NVMe",
+                    "formato": "M.2"
+                },
+                "imagen_url": "https://http2.mlstatic.com/D_NQ_NP_2X_682731-MLA99450928002_112025-F.webp",
+                "compra_url": "https://www.mercadolibre.com.mx/ssd-kingston-nv3-1tb-nvme-40-snv3s/up/MLMU3900924564",
+                "tienda": "Mercado Libre",
+                "stock": true,
+                "activo": true
+            }
         },
         {
             "component": "Optimización",
@@ -47,7 +114,8 @@
             "impact": "Puede reducir consumo de RAM y mejorar el arranque.",
             "cost": 0,
             "priority": 5,
-            "reason": "Optimización de software sin inversión adicional."
+            "reason": "Optimización de software sin inversión adicional.",
+            "product": null
         }
     ]
 }

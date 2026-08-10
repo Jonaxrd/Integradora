@@ -3,6 +3,8 @@ import os
 import sys
 from dataclasses import dataclass
 
+from database import buscar_componentes, buscar_equipos
+
 
 @dataclass
 class Recommendation:
@@ -12,6 +14,8 @@ class Recommendation:
     cost: int = 0
     priority_score: float = 0.0
     reason: str = ""
+    product: dict | None = None
+
 
 def obtener_directorio_app():
 
@@ -29,42 +33,111 @@ def obtener_directorio_app():
         os.path.abspath(__file__)
     )
 
+
 def load_hardware():
-    with open("hardware.json", "r", encoding="utf-8") as f:
+
+    ruta = os.path.join(
+        obtener_directorio_app(),
+        "hardware.json"
+    )
+
+    with open(
+        ruta,
+        "r",
+        encoding="utf-8"
+    ) as f:
+
         return json.load(f)
 
 
 def parse_user_pc(data):
-    cpu = data.get("CPU", {}).get("Procesador", "Desconocido")
 
-    ram = data.get("RAM", {}).get("RAM_Total_GB", 0)
-    ram_usage = data.get("RAM", {}).get("Uso_RAM_Porcentaje", 0)
+    cpu = data.get(
+        "CPU",
+        {}
+    ).get(
+        "Procesador",
+        "Desconocido"
+    )
 
-    gpu_list = data.get("GPU", [])
+    ram = data.get(
+        "RAM",
+        {}
+    ).get(
+        "RAM_Total_GB",
+        0
+    )
+
+    ram_usage = data.get(
+        "RAM",
+        {}
+    ).get(
+        "Uso_RAM_Porcentaje",
+        0
+    )
+
+    gpu_list = data.get(
+        "GPU",
+        []
+    )
 
     gpu_name = "No detectada"
     gpu_vram = 0
 
     if gpu_list:
-        gpu_name = gpu_list[0].get("Nombre", "Desconocida")
+
+        gpu_name = gpu_list[0].get(
+            "Nombre",
+            "Desconocida"
+        )
 
         try:
-            gpu_vram = float(gpu_list[0].get("VRAM_MB", 0))
-        except:
+
+            gpu_vram = float(
+                gpu_list[0].get(
+                    "VRAM_MB",
+                    0
+                )
+            )
+
+        except Exception:
+
             gpu_vram = 0
 
-    discos = data.get("Discos", [])
+
+    discos = data.get(
+        "Discos",
+        []
+    )
 
     disco_lleno = False
 
     for disco in discos:
-        if disco.get("Uso_Porcentaje", 0) >= 85:
+
+        if disco.get(
+            "Uso_Porcentaje",
+            0
+        ) >= 85:
+
             disco_lleno = True
+            break
 
-    temperaturas = data.get("Temperaturas", {})
 
-    cpu_temp = temperaturas.get("CPU_C", "No disponible")
-    gpu_temp = temperaturas.get("GPU_C", "No disponible")
+    temperaturas = data.get(
+        "Temperaturas",
+        {}
+    )
+
+    cpu_temp = temperaturas.get(
+        "CPU_C",
+        "No disponible"
+    )
+
+    gpu_temp = temperaturas.get(
+        "GPU_C",
+        "No disponible"
+    )
+
 
     return {
         "cpu": cpu,
@@ -79,27 +152,45 @@ def parse_user_pc(data):
 
 
 def cpu_score(cpu):
+
     cpu = cpu.lower()
 
-    if "athlon" in cpu or "celeron" in cpu or "pentium" in cpu:
+    if (
+        "athlon" in cpu
+        or "celeron" in cpu
+        or "pentium" in cpu
+    ):
         return 35
 
-    if "i3" in cpu or "ryzen 3" in cpu:
+    if (
+        "i3" in cpu
+        or "ryzen 3" in cpu
+    ):
         return 55
 
-    if "i5" in cpu or "ryzen 5" in cpu:
+    if (
+        "i5" in cpu
+        or "ryzen 5" in cpu
+    ):
         return 75
 
-    if "i7" in cpu or "ryzen 7" in cpu:
+    if (
+        "i7" in cpu
+        or "ryzen 7" in cpu
+    ):
         return 88
 
-    if "i9" in cpu or "ryzen 9" in cpu:
+    if (
+        "i9" in cpu
+        or "ryzen 9" in cpu
+    ):
         return 96
 
     return 50
 
 
 def ram_score(ram):
+
     if ram < 8:
         return 30
 
@@ -112,10 +203,18 @@ def ram_score(ram):
     return 95
 
 
-def gpu_score(gpu_name, gpu_vram):
+def gpu_score(
+    gpu_name,
+    gpu_vram
+):
+
     nombre = gpu_name.lower()
 
-    if "intel" in nombre or "vega" in nombre or "uhd" in nombre:
+    if (
+        "intel" in nombre
+        or "vega" in nombre
+        or "uhd" in nombre
+    ):
         return 40
 
     if gpu_vram >= 12000:
@@ -137,14 +236,24 @@ def gpu_score(gpu_name, gpu_vram):
 
 
 def health_score(pc):
-    cpu = cpu_score(pc["cpu"])
-    ram = ram_score(pc["ram"])
-    gpu = gpu_score(pc["gpu_name"], pc["gpu_vram"])
+
+    cpu = cpu_score(
+        pc["cpu"]
+    )
+
+    ram = ram_score(
+        pc["ram"]
+    )
+
+    gpu = gpu_score(
+        pc["gpu_name"],
+        pc["gpu_vram"]
+    )
 
     score = (
-        cpu * 0.40 +
-        ram * 0.30 +
-        gpu * 0.30
+        cpu * 0.40
+        + ram * 0.30
+        + gpu * 0.30
     )
 
     if pc["ram_usage"] >= 90:
@@ -154,200 +263,497 @@ def health_score(pc):
         score -= 6
 
     try:
-        if float(pc["cpu_temp"]) >= 85:
+
+        if float(
+            pc["cpu_temp"]
+        ) >= 85:
+
             score -= 10
-    except:
+
+    except Exception:
         pass
 
-    return max(0, min(100, round(score)))
+    return max(
+        0,
+        min(
+            100,
+            round(score)
+        )
+    )
 
 
 def classify(pc):
-    score = health_score(pc)
+
+    score = health_score(
+        pc
+    )
 
     if score < 45:
+
         return {
             "level": "bajo",
             "health": score,
             "use": "Uso básico y tareas ligeras",
             "gaming": "Limitado para videojuegos modernos",
-            "recommendation": "Se recomienda priorizar actualizaciones de hardware"
+            "recommendation": (
+                "Se recomienda priorizar "
+                "actualizaciones de hardware"
+            )
         }
 
     if score < 75:
+
         return {
             "level": "medio",
             "health": score,
             "use": "Uso general y multitarea",
-            "gaming": "Adecuado para gaming ligero o medio",
-            "recommendation": "El equipo puede mejorar con actualizaciones específicas"
+            "gaming": (
+                "Adecuado para gaming ligero o medio"
+            ),
+            "recommendation": (
+                "El equipo puede mejorar "
+                "con actualizaciones específicas"
+            )
         }
 
     return {
         "level": "alto",
         "health": score,
         "use": "Uso avanzado y multitarea",
-        "gaming": "Buen rendimiento general para gaming",
-        "recommendation": "El equipo tiene un buen equilibrio de hardware"
+        "gaming": (
+            "Buen rendimiento general para gaming"
+        ),
+        "recommendation": (
+            "El equipo tiene un buen "
+            "equilibrio de hardware"
+        )
     }
 
 
-def recommendations(pc, budget):
-    recs = []
+def seleccionar_producto(
+    tipo,
+    presupuesto
+):
 
-    # RAM
-    if pc["ram"] < 8:
-        recs.append(
-            Recommendation(
-                component="RAM",
-                suggestion="Actualizar a mínimo 16 GB de RAM",
-                impact="Mejorará considerablemente la multitarea y estabilidad.",
-                cost=1200,
-                priority_score=10,
-                reason=f"El equipo tiene aproximadamente {pc['ram']} GB de RAM."
-            )
+    try:
+
+        productos = buscar_componentes(
+            tipo,
+            presupuesto
         )
 
-    elif pc["ram"] < 16:
+        if not productos:
+            return None
+
+        return productos[0]
+
+    except Exception as e:
+
+        print(
+            f"No fue posible consultar "
+            f"MongoDB para {tipo}: {e}"
+        )
+
+        return None
+
+
+def seleccionar_equipo(
+    presupuesto,
+    nivel_actual
+):
+
+    try:
+
+        nivel_minimo = (
+            nivel_actual + 20
+        )
+
+        equipos = buscar_equipos(
+            presupuesto,
+            nivel_minimo
+        )
+
+        if not equipos:
+            return None
+
+        return equipos[0]
+
+    except Exception as e:
+
+        print(
+            "No fue posible consultar "
+            f"equipos en MongoDB: {e}"
+        )
+
+        return None
+
+
+def recommendations(
+    pc,
+    budget
+):
+
+    recs = []
+
+
+    if pc["ram"] < 16:
+
+        producto = seleccionar_producto(
+            "RAM",
+            budget
+        )
+
         recs.append(
             Recommendation(
                 component="RAM",
-                suggestion="Ampliar la memoria RAM a 16 GB",
-                impact="Mejor rendimiento en multitarea, navegación y videojuegos.",
-                cost=900,
-                priority_score=9,
-                reason="16 GB es un punto recomendado para uso moderno."
+                suggestion=(
+                    "Ampliar memoria RAM "
+                    "a mínimo 16 GB"
+                ),
+                impact=(
+                    "Mejorará el rendimiento "
+                    "en multitarea y aplicaciones modernas."
+                ),
+                cost=(
+                    producto["precio_mxn"]
+                    if producto
+                    else 900
+                ),
+                priority_score=(
+                    10
+                    if pc["ram"] < 8
+                    else 9
+                ),
+                reason=(
+                    f"El equipo tiene aproximadamente "
+                    f"{pc['ram']} GB de memoria RAM."
+                ),
+                product=producto
             )
         )
 
     elif pc["ram_usage"] >= 85:
+
+        producto = seleccionar_producto(
+            "RAM",
+            budget
+        )
+
         recs.append(
             Recommendation(
                 component="RAM",
-                suggestion="Considerar ampliar la memoria RAM",
-                impact="Reducirá saturación cuando se ejecuten varias aplicaciones.",
-                cost=1500,
+                suggestion=(
+                    "Considerar ampliar "
+                    "la memoria RAM"
+                ),
+                impact=(
+                    "Reducirá la saturación "
+                    "cuando se ejecuten varias "
+                    "aplicaciones al mismo tiempo."
+                ),
+                cost=(
+                    producto["precio_mxn"]
+                    if producto
+                    else 1500
+                ),
                 priority_score=8,
-                reason=f"Actualmente se está utilizando aproximadamente {pc['ram_usage']}% de la RAM."
+                reason=(
+                    "Actualmente se está utilizando "
+                    f"aproximadamente "
+                    f"{pc['ram_usage']}% de la RAM."
+                ),
+                product=producto
             )
         )
 
-    # GPU
-    gpu_s = gpu_score(pc["gpu_name"], pc["gpu_vram"])
+
+    gpu_s = gpu_score(
+        pc["gpu_name"],
+        pc["gpu_vram"]
+    )
 
     if gpu_s <= 45:
+
+        producto = seleccionar_producto(
+            "GPU",
+            budget
+        )
+
         recs.append(
             Recommendation(
                 component="GPU",
-                suggestion="Considerar una tarjeta gráfica dedicada",
-                impact="Mayor rendimiento en videojuegos, edición y aplicaciones 3D.",
-                cost=4500,
+                suggestion=(
+                    "Considerar una tarjeta "
+                    "gráfica dedicada"
+                ),
+                impact=(
+                    "Mayor rendimiento en videojuegos, "
+                    "edición y aplicaciones 3D."
+                ),
+                cost=(
+                    producto["precio_mxn"]
+                    if producto
+                    else 4500
+                ),
                 priority_score=8,
-                reason=f"GPU detectada: {pc['gpu_name']}."
+                reason=(
+                    f"GPU detectada: "
+                    f"{pc['gpu_name']}."
+                ),
+                product=producto
             )
         )
 
     elif gpu_s <= 60:
+
+        producto = seleccionar_producto(
+            "GPU",
+            budget
+        )
+
         recs.append(
             Recommendation(
                 component="GPU",
-                suggestion="Actualizar la GPU para gaming moderno",
-                impact="Permitirá usar configuraciones gráficas más altas.",
-                cost=6500,
+                suggestion=(
+                    "Actualizar la GPU "
+                    "para gaming moderno"
+                ),
+                impact=(
+                    "Permitirá utilizar "
+                    "configuraciones gráficas más altas."
+                ),
+                cost=(
+                    producto["precio_mxn"]
+                    if producto
+                    else 6500
+                ),
                 priority_score=7,
-                reason="La capacidad gráfica actual puede limitar videojuegos recientes."
+                reason=(
+                    "La capacidad gráfica actual "
+                    "puede limitar videojuegos recientes."
+                ),
+                product=producto
             )
         )
 
-    # CPU
-    cpu_s = cpu_score(pc["cpu"])
+
+    cpu_s = cpu_score(
+        pc["cpu"]
+    )
 
     if cpu_s < 50:
+
+        producto = seleccionar_producto(
+            "CPU",
+            budget
+        )
+
         recs.append(
             Recommendation(
                 component="CPU",
-                suggestion="Considerar una plataforma con procesador más moderno",
-                impact="Mejorará rendimiento general y reducirá cuellos de botella.",
-                cost=6000,
+                suggestion=(
+                    "Considerar una plataforma "
+                    "con procesador más moderno"
+                ),
+                impact=(
+                    "Mejorará el rendimiento general "
+                    "y reducirá cuellos de botella."
+                ),
+                cost=(
+                    producto["precio_mxn"]
+                    if producto
+                    else 6000
+                ),
                 priority_score=9,
-                reason=f"Procesador detectado: {pc['cpu']}."
+                reason=(
+                    f"Procesador detectado: "
+                    f"{pc['cpu']}."
+                ),
+                product=producto
             )
         )
 
-    # Almacenamiento
+
     if pc["disco_lleno"]:
+
+        producto = seleccionar_producto(
+            "SSD",
+            budget
+        )
+
         recs.append(
             Recommendation(
                 component="Almacenamiento",
-                suggestion="Liberar espacio o ampliar almacenamiento",
-                impact="Ayuda a mantener el rendimiento y evita falta de espacio.",
-                cost=1000,
+                suggestion=(
+                    "Liberar espacio o "
+                    "ampliar almacenamiento"
+                ),
+                impact=(
+                    "Ayuda a mantener el rendimiento "
+                    "y evita falta de espacio."
+                ),
+                cost=(
+                    producto["precio_mxn"]
+                    if producto
+                    else 1000
+                ),
                 priority_score=8,
-                reason="Se detectó una unidad con más del 85% de utilización."
+                reason=(
+                    "Se detectó una unidad "
+                    "con más del 85% de utilización."
+                ),
+                product=producto
             )
         )
 
-    # Temperatura CPU
+
     try:
-        cpu_temp = float(pc["cpu_temp"])
+
+        cpu_temp = float(
+            pc["cpu_temp"]
+        )
 
         if cpu_temp >= 85:
+
             recs.append(
                 Recommendation(
                     component="Temperatura",
-                    suggestion="Revisar sistema de refrigeración",
-                    impact="Puede evitar thermal throttling y proteger los componentes.",
+                    suggestion=(
+                        "Revisar sistema "
+                        "de refrigeración"
+                    ),
+                    impact=(
+                        "Puede evitar thermal throttling "
+                        "y proteger los componentes."
+                    ),
                     cost=500,
                     priority_score=10,
-                    reason=f"Temperatura de CPU detectada: {cpu_temp} °C."
+                    reason=(
+                        f"Temperatura de CPU detectada: "
+                        f"{cpu_temp} °C."
+                    )
                 )
             )
 
         elif cpu_temp >= 75:
+
             recs.append(
                 Recommendation(
                     component="Temperatura",
-                    suggestion="Realizar mantenimiento preventivo",
-                    impact="Limpieza y cambio de pasta térmica pueden mejorar temperaturas.",
+                    suggestion=(
+                        "Realizar mantenimiento preventivo"
+                    ),
+                    impact=(
+                        "Limpieza y cambio de pasta térmica "
+                        "pueden mejorar temperaturas."
+                    ),
                     cost=350,
                     priority_score=7,
-                    reason=f"Temperatura de CPU detectada: {cpu_temp} °C."
+                    reason=(
+                        f"Temperatura de CPU detectada: "
+                        f"{cpu_temp} °C."
+                    )
                 )
             )
 
-    except:
+    except Exception:
         pass
 
-    # Optimización gratuita
+
     recs.append(
         Recommendation(
             component="Optimización",
-            suggestion="Revisar programas que inician con Windows",
-            impact="Puede reducir consumo de RAM y mejorar el arranque.",
+            suggestion=(
+                "Revisar programas que "
+                "inician con Windows"
+            ),
+            impact=(
+                "Puede reducir consumo de RAM "
+                "y mejorar el arranque."
+            ),
             cost=0,
             priority_score=5,
-            reason="Optimización de software sin inversión adicional."
+            reason=(
+                "Optimización de software "
+                "sin inversión adicional."
+            )
         )
     )
 
-    # Filtrar por presupuesto
+
+    perfil = classify(
+        pc
+    )
+
+    if (
+        perfil["level"] == "bajo"
+        and budget >= 10000
+    ):
+
+        equipo = seleccionar_equipo(
+            budget,
+            perfil["health"]
+        )
+
+        if equipo:
+
+            recs.append(
+                Recommendation(
+                    component="Equipo completo",
+                    suggestion=(
+                        "Considerar cambio de equipo "
+                        "en lugar de continuar "
+                        "actualizando la plataforma actual."
+                    ),
+                    impact=(
+                        "Representa un salto generacional "
+                        "significativo frente al "
+                        "hardware actual."
+                    ),
+                    cost=equipo[
+                        "precio_mxn"
+                    ],
+                    priority_score=10,
+                    reason=(
+                        "La plataforma actual presenta "
+                        "limitaciones importantes y "
+                        "el presupuesto permite considerar "
+                        "un equipo más moderno."
+                    ),
+                    product=equipo
+                )
+            )
+
+
     posibles = [
-        r for r in recs
+        r
+        for r in recs
         if r.cost <= budget
     ]
 
-    # Si ninguna mejora física entra en presupuesto
+
     if not posibles:
+
         posibles.append(
             Recommendation(
                 component="Presupuesto",
-                suggestion="Ahorrar para una actualización de mayor impacto",
-                impact="El presupuesto actual no permite una actualización significativa.",
+                suggestion=(
+                    "Ahorrar para una actualización "
+                    "de mayor impacto"
+                ),
+                impact=(
+                    "El presupuesto actual no permite "
+                    "una actualización significativa."
+                ),
                 cost=0,
                 priority_score=6,
-                reason="Las mejoras recomendadas superan el presupuesto disponible."
+                reason=(
+                    "Las mejoras recomendadas "
+                    "superan el presupuesto disponible."
+                )
             )
         )
+
 
     posibles.sort(
         key=lambda x: x.priority_score,
@@ -357,36 +763,69 @@ def recommendations(pc, budget):
     return posibles
 
 
-def export(pc, profile, recs, budget):
+def export(
+    pc,
+    profile,
+    recs,
+    budget
+):
+
     data = {
+
         "system_profile": profile,
+
         "budget": budget,
+
         "hardware_summary": {
+
             "cpu": pc["cpu"],
+
             "ram_gb": pc["ram"],
-            "ram_usage": pc["ram_usage"],
-            "gpu": pc["gpu_name"],
-            "gpu_vram_mb": pc["gpu_vram"],
-            "cpu_temperature": pc["cpu_temp"],
-            "gpu_temperature": pc["gpu_temp"]
+
+            "ram_usage": pc[
+                "ram_usage"
+            ],
+
+            "gpu": pc[
+                "gpu_name"
+            ],
+
+            "gpu_vram_mb": pc[
+                "gpu_vram"
+            ],
+
+            "cpu_temperature": pc[
+                "cpu_temp"
+            ],
+
+            "gpu_temperature": pc[
+                "gpu_temp"
+            ]
+
         },
+
         "recommendations": [
+
             {
                 "component": r.component,
                 "suggestion": r.suggestion,
                 "impact": r.impact,
                 "cost": r.cost,
                 "priority": r.priority_score,
-                "reason": r.reason
+                "reason": r.reason,
+                "product": r.product
             }
+
             for r in recs
         ]
     }
 
+
     ruta_resultados = os.path.join(
-    obtener_directorio_app(),
-    "resultados.json"
+        obtener_directorio_app(),
+        "resultados.json"
     )
+
 
     with open(
         ruta_resultados,
@@ -399,28 +838,37 @@ def export(pc, profile, recs, budget):
             f,
             indent=4,
             ensure_ascii=False
-    )
+        )
+
 
     return data
 
 
-def generar_recomendaciones(presupuesto, hardware=None):
+def generar_recomendaciones(
+    presupuesto,
+    hardware=None
+):
 
     if hardware is None:
+
         hardware = load_hardware()
+
 
     pc = parse_user_pc(
         hardware
     )
 
+
     profile = classify(
         pc
     )
+
 
     recs = recommendations(
         pc,
         presupuesto
     )
+
 
     return export(
         pc,
@@ -431,7 +879,6 @@ def generar_recomendaciones(presupuesto, hardware=None):
 
 
 if __name__ == "__main__":
-    import sys
 
     budget = (
         int(sys.argv[1])
@@ -439,4 +886,6 @@ if __name__ == "__main__":
         else 3000
     )
 
-    generar_recomendaciones(budget)
+    generar_recomendaciones(
+        budget
+    )
