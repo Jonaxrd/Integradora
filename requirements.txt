@@ -1,0 +1,8 @@
+Flask
+gunicorn
+pymongo
+dnspython
+requests
+psutil
+py-cpuinfo
+WMI
