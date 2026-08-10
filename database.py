@@ -159,6 +159,9 @@ def obtener_equipos():
     )
 
 
+
+
+
 def buscar_componentes(
     tipo,
     presupuesto
@@ -215,6 +218,118 @@ def buscar_equipos(
             -1
         )
     )
+
+
+def buscar_componentes_compatibles(
+    tipo,
+    presupuesto,
+    compatibilidad=None
+):
+
+    try:
+
+        db = obtener_db()
+
+        consulta = {
+            "tipo": tipo,
+            "precio_mxn": {
+                "$lte": presupuesto
+            },
+            "activo": True
+        }
+
+
+        compatibilidad = (
+            compatibilidad
+            or {}
+        )
+
+
+        if tipo == "RAM":
+
+            tecnologia = compatibilidad.get(
+                "tipo_ram"
+            )
+
+            formato = compatibilidad.get(
+                "formato_ram"
+            )
+
+            if (
+                tecnologia
+                and tecnologia != "Desconocido"
+            ):
+
+                consulta[
+                    "compatibilidad.tecnologia"
+                ] = tecnologia
+
+
+            if (
+                formato
+                and formato != "Desconocido"
+            ):
+
+                consulta[
+                    "compatibilidad.formato"
+                ] = formato
+
+
+        elif tipo == "CPU":
+
+            socket = compatibilidad.get(
+                "socket_cpu"
+            )
+
+            if (
+                socket
+                and socket != "Desconocido"
+            ):
+
+                consulta[
+                    "compatibilidad.socket"
+                ] = socket
+
+
+        elif tipo == "SSD":
+
+            interfaces = compatibilidad.get(
+                "interfaces_almacenamiento",
+                []
+            )
+
+            if interfaces:
+
+                consulta[
+                    "compatibilidad.interfaz"
+                ] = {
+                    "$in": interfaces
+                }
+
+
+        productos = list(
+            db.componentes.find(
+                consulta,
+                {
+                    "_id": 0
+                }
+            ).sort(
+                "nivel_rendimiento",
+                -1
+            )
+        )
+
+
+        return productos
+
+    except Exception as e:
+
+        print(
+            "Error consultando compatibilidad "
+            f"en MongoDB: {e}"
+        )
+
+        return []
 
 
 if __name__ == "__main__":

@@ -3,7 +3,11 @@ import os
 import sys
 from dataclasses import dataclass
 
-from database import buscar_componentes, buscar_equipos
+from database import (
+    buscar_componentes,
+    buscar_componentes_compatibles,
+    buscar_equipos
+)
 
 
 @dataclass
@@ -138,6 +142,11 @@ def parse_user_pc(data):
         "No disponible"
     )
 
+    compatibilidad = data.get(
+    "Compatibilidad",
+    {}
+    )
+
 
     return {
         "cpu": cpu,
@@ -147,8 +156,32 @@ def parse_user_pc(data):
         "gpu_vram": gpu_vram,
         "disco_lleno": disco_lleno,
         "cpu_temp": cpu_temp,
-        "gpu_temp": gpu_temp
-    }
+        "gpu_temp": gpu_temp,
+        "tipo_equipo": compatibilidad.get(
+            "tipo_equipo",
+            "Desconocido"
+        ),
+
+        "tipo_ram": compatibilidad.get(
+            "tipo_ram",
+            "Desconocido"
+        ),
+
+        "formato_ram": compatibilidad.get(
+            "formato_ram",
+            "Desconocido"
+        ),
+
+        "socket_cpu": compatibilidad.get(
+            "socket_cpu",
+            "Desconocido"
+        ),
+
+    "interfaces_almacenamiento": compatibilidad.get(
+        "interfaces_almacenamiento",
+    []
+)
+}
 
 
 def cpu_score(cpu):
@@ -332,8 +365,78 @@ def classify(pc):
 
 def seleccionar_producto(
     tipo,
-    presupuesto
+    presupuesto,
+    pc
 ):
+
+    compatibilidad = {
+        "tipo_ram": pc.get(
+            "tipo_ram"
+        ),
+
+        "formato_ram": pc.get(
+            "formato_ram"
+        ),
+
+        "socket_cpu": pc.get(
+            "socket_cpu"
+        ),
+
+        "interfaces_almacenamiento": pc.get(
+            "interfaces_almacenamiento",
+            []
+        )
+    }
+
+
+    try:
+
+        compatibles = (
+            buscar_componentes_compatibles(
+                tipo,
+                presupuesto,
+                compatibilidad
+            )
+        )
+
+
+        if compatibles:
+
+            producto = compatibles[0]
+
+            producto[
+                "compatibility_status"
+            ] = "compatible"
+
+            return producto
+
+
+        productos = buscar_componentes(
+            tipo,
+            presupuesto
+        )
+
+
+        if productos:
+
+            producto = productos[0]
+
+            producto[
+                "compatibility_status"
+            ] = "verificar"
+
+            return producto
+
+
+        return None
+
+    except Exception as e:
+
+        print(
+            f"Error buscando {tipo}: {e}"
+        )
+
+        return None
 
     try:
 
@@ -400,7 +503,8 @@ def recommendations(
 
         producto = seleccionar_producto(
             "RAM",
-            budget
+            budget,
+            pc
         )
 
         recs.append(
@@ -436,7 +540,8 @@ def recommendations(
 
         producto = seleccionar_producto(
             "RAM",
-            budget
+            budget,
+            pc
         )
 
         recs.append(
@@ -476,7 +581,8 @@ def recommendations(
 
         producto = seleccionar_producto(
             "GPU",
-            budget
+            budget,
+            pc
         )
 
         recs.append(
@@ -508,7 +614,8 @@ def recommendations(
 
         producto = seleccionar_producto(
             "GPU",
-            budget
+            budget,
+            pc
         )
 
         recs.append(
@@ -541,11 +648,15 @@ def recommendations(
         pc["cpu"]
     )
 
-    if cpu_s < 50:
+    if (
+    cpu_s < 50
+    and pc["tipo_equipo"] != "Laptop"
+    ):
 
         producto = seleccionar_producto(
             "CPU",
-            budget
+            budget,
+            pc
         )
 
         recs.append(
@@ -578,7 +689,8 @@ def recommendations(
 
         producto = seleccionar_producto(
             "SSD",
-            budget
+            budget,
+            pc
         )
 
         recs.append(

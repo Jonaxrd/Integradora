@@ -6,11 +6,11 @@
         "gaming": "Limitado para videojuegos modernos",
         "recommendation": "Se recomienda priorizar actualizaciones de hardware"
     },
-    "budget": 6000,
+    "budget": 4000,
     "hardware_summary": {
         "cpu": "AMD Athlon Silver 3050U with Radeon Graphics",
         "ram_gb": 13.92,
-        "ram_usage": 71.1,
+        "ram_usage": 78.5,
         "gpu": "No disponible",
         "gpu_vram_mb": 0,
         "cpu_temperature": "No disponible",
@@ -42,7 +42,8 @@
                 "compra_url": "https://www.mercadolibre.com.mx/memoria-ram-kingston-fury-beast-rgb-ddr4-16gb-3200-mts/up/MLMU3045022597",
                 "tienda": "Mercado Libre",
                 "stock": true,
-                "activo": true
+                "activo": true,
+                "compatibility_status": "compatible"
             }
         },
         {
@@ -69,17 +70,9 @@
                 "compra_url": "https://listado.mercadolibre.com.mx/ryzen-5-7600",
                 "tienda": "Mercado Libre",
                 "stock": true,
-                "activo": true
+                "activo": true,
+                "compatibility_status": "compatible"
             }
-        },
-        {
-            "component": "GPU",
-            "suggestion": "Considerar una tarjeta gráfica dedicada",
-            "impact": "Mayor rendimiento en videojuegos, edición y aplicaciones 3D.",
-            "cost": 4500,
-            "priority": 8,
-            "reason": "GPU detectada: No disponible.",
-            "product": null
         },
         {
             "component": "Almacenamiento",
@@ -105,7 +98,8 @@
                 "compra_url": "https://www.mercadolibre.com.mx/ssd-kingston-nv3-1tb-nvme-40-snv3s/up/MLMU3900924564",
                 "tienda": "Mercado Libre",
                 "stock": true,
-                "activo": true
+                "activo": true,
+                "compatibility_status": "compatible"
             }
         },
         {

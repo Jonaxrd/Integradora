@@ -10,13 +10,13 @@
         "Nucleos_Fisicos": 2,
         "Hilos": 2,
         "Frecuencia_GHz": 2.3,
-        "Uso_CPU_Porcentaje": 17.3
+        "Uso_CPU_Porcentaje": 15.5
     },
     "RAM": {
         "RAM_Total_GB": 13.92,
-        "RAM_Usada_GB": 9.89,
-        "RAM_Libre_GB": 4.03,
-        "Uso_RAM_Porcentaje": 71.1
+        "RAM_Usada_GB": 10.92,
+        "RAM_Libre_GB": 3.0,
+        "Uso_RAM_Porcentaje": 78.5
     },
     "GPU": [
         {
@@ -35,13 +35,20 @@
             "Unidad": "C:\\",
             "Sistema_Archivos": "NTFS",
             "Capacidad_GB": 237.35,
-            "Usado_GB": 219.83,
-            "Libre_GB": 17.52,
-            "Uso_Porcentaje": 92.6
+            "Usado_GB": 219.95,
+            "Libre_GB": 17.4,
+            "Uso_Porcentaje": 92.7
         }
     ],
     "Temperaturas": {
         "CPU_C": "No disponible",
         "GPU_C": "No disponible"
+    },
+    "Compatibilidad": {
+        "tipo_equipo": "Desconocido",
+        "tipo_ram": "Desconocido",
+        "formato_ram": "Desconocido",
+        "socket_cpu": "Desconocido",
+        "interfaces_almacenamiento": []
     }
 }

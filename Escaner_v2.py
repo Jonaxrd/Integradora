@@ -160,6 +160,145 @@ def obtener_gpu():
 
     return gpus
 
+def obtener_compatibilidad():
+
+    datos = {
+        "tipo_equipo": "Desconocido",
+        "tipo_ram": "Desconocido",
+        "formato_ram": "Desconocido",
+        "socket_cpu": "Desconocido",
+        "interfaces_almacenamiento": []
+    }
+
+    try:
+
+        conexion = wmi.WMI()
+
+        # Tipo de equipo
+        gabinetes = conexion.Win32_SystemEnclosure()
+
+        if gabinetes:
+
+            tipos = gabinetes[0].ChassisTypes or []
+
+            tipos_laptop = {
+                8, 9, 10, 11, 12, 14,
+                18, 21, 30, 31, 32
+            }
+
+            if any(
+                tipo in tipos_laptop
+                for tipo in tipos
+            ):
+                datos["tipo_equipo"] = "Laptop"
+
+            else:
+                datos["tipo_equipo"] = "Desktop"
+
+
+        # Socket CPU
+        procesadores = conexion.Win32_Processor()
+
+        if procesadores:
+
+            socket = procesadores[0].SocketDesignation
+
+            if socket:
+                datos["socket_cpu"] = str(socket)
+
+
+        # RAM
+        memorias = conexion.Win32_PhysicalMemory()
+
+        if memorias:
+
+            memoria = memorias[0]
+
+            tipo_smbios = getattr(
+                memoria,
+                "SMBIOSMemoryType",
+                None
+            )
+
+            tipos_ram = {
+                20: "DDR",
+                21: "DDR2",
+                24: "DDR3",
+                26: "DDR4",
+                34: "DDR5"
+            }
+
+            if tipo_smbios in tipos_ram:
+
+                datos["tipo_ram"] = tipos_ram[
+                    tipo_smbios
+                ]
+
+
+            form_factor = getattr(
+                memoria,
+                "FormFactor",
+                None
+            )
+
+            formatos = {
+                8: "DIMM",
+                12: "SODIMM"
+            }
+
+            if form_factor in formatos:
+
+                datos["formato_ram"] = formatos[
+                    form_factor
+                ]
+
+
+        # Almacenamiento
+        interfaces = set()
+
+        for disco in conexion.Win32_DiskDrive():
+
+            interfaz = (
+                disco.InterfaceType
+                or ""
+            ).upper()
+
+            modelo = (
+                disco.Model
+                or ""
+            ).upper()
+
+            pnp = (
+                disco.PNPDeviceID
+                or ""
+            ).upper()
+
+            if (
+                "NVME" in modelo
+                or "NVME" in pnp
+            ):
+                interfaces.add("NVMe")
+
+            elif "SATA" in interfaz:
+
+                interfaces.add("SATA")
+
+            elif interfaz:
+
+                interfaces.add(
+                    interfaz
+                )
+
+        datos[
+            "interfaces_almacenamiento"
+        ] = list(interfaces)
+
+    except Exception:
+        pass
+
+
+    return datos
+
 
 def obtener_motherboard():
 
@@ -715,6 +854,8 @@ def escanear_hardware():
             "Guardando información del equipo...",
             COLOR_PRIMARY_LIGHT
         )
+
+        datos["Compatibilidad"] = obtener_compatibilidad()
 
         guardar_hardware(datos)
 
