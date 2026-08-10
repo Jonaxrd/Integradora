@@ -1,4 +1,6 @@
 import json
+import os
+import sys
 from dataclasses import dataclass
 
 
@@ -11,6 +13,21 @@ class Recommendation:
     priority_score: float = 0.0
     reason: str = ""
 
+def obtener_directorio_app():
+
+    if getattr(
+        sys,
+        "frozen",
+        False
+    ):
+
+        return os.path.dirname(
+            sys.executable
+        )
+
+    return os.path.dirname(
+        os.path.abspath(__file__)
+    )
 
 def load_hardware():
     with open("hardware.json", "r", encoding="utf-8") as f:
@@ -366,27 +383,39 @@ def export(pc, profile, recs, budget):
         ]
     }
 
+    ruta_resultados = os.path.join(
+    obtener_directorio_app(),
+    "resultados.json"
+    )
+
     with open(
-        "resultados.json",
+        ruta_resultados,
         "w",
         encoding="utf-8"
     ) as f:
+
         json.dump(
             data,
             f,
             indent=4,
             ensure_ascii=False
-        )
+    )
 
     return data
 
 
-def generar_recomendaciones(presupuesto):
-    hardware = load_hardware()
+def generar_recomendaciones(presupuesto, hardware=None):
 
-    pc = parse_user_pc(hardware)
+    if hardware is None:
+        hardware = load_hardware()
 
-    profile = classify(pc)
+    pc = parse_user_pc(
+        hardware
+    )
+
+    profile = classify(
+        pc
+    )
 
     recs = recommendations(
         pc,

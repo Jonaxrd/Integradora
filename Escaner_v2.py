@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 import webbrowser
 import threading
 import json
+import sys
 import platform
 import os
 
@@ -37,6 +38,22 @@ datos_hardware = {}
 datos_resultados = {}
 presupuesto_actual = 0
 
+
+def obtener_directorio_app():
+
+    if getattr(
+        sys,
+        "frozen",
+        False
+    ):
+
+        return os.path.dirname(
+            sys.executable
+        )
+
+    return os.path.dirname(
+        os.path.abspath(__file__)
+    )
 
 def obtener_sistema():
 
@@ -316,9 +333,7 @@ def obtener_temperaturas():
 def guardar_hardware(datos):
 
     ruta = os.path.join(
-        os.path.dirname(
-            os.path.abspath(__file__)
-        ),
+        obtener_directorio_app(),
         "hardware.json"
     )
 
@@ -1059,7 +1074,8 @@ def ejecutar_motor_recomendaciones(
         )
 
         resultados = generar_recomendaciones(
-            presupuesto
+            presupuesto,
+            datos_hardware
         )
 
         ventana.after(
