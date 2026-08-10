@@ -1,63 +1,30 @@
-import os
-import sys
-
-from dotenv import load_dotenv
-from pymongo import MongoClient
+import requests
 
 
-def obtener_directorio_app():
+API_URL = "https://TU-SERVICIO.onrender.com"
 
-    if getattr(sys, "frozen", False):
-        return os.path.dirname(sys.executable)
-
-    return os.path.dirname(
-        os.path.abspath(__file__)
-    )
-
-
-RUTA_ENV = os.path.join(
-    obtener_directorio_app(),
-    ".env"
-)
-
-load_dotenv(RUTA_ENV)
-
-
-MONGO_URI = os.getenv("MONGO_URI")
-
-DATABASE_NAME = "scope_db"
-
-
-def obtener_cliente():
-
-    if not MONGO_URI:
-        raise RuntimeError(
-            "No se encontró MONGO_URI en las variables de entorno."
-        )
-
-    return MongoClient(
-        MONGO_URI,
-        serverSelectionTimeoutMS=5000
-    )
-
-
-def obtener_db():
-
-    cliente = obtener_cliente()
-
-    return cliente[DATABASE_NAME]
+TIMEOUT = 15
 
 
 def probar_conexion():
 
     try:
 
-        cliente = obtener_cliente()
+        response = requests.get(
+            f"{API_URL}/",
+            timeout=TIMEOUT
+        )
 
-        cliente.admin.command("ping")
+        response.raise_for_status()
+
+        data = response.json()
 
         print(
-            "Conexion con MongoDB realizada correctamente."
+            "Conexion con SCOPE API realizada correctamente."
+        )
+
+        print(
+            f"Servicio: {data.get('service', 'SCOPE API')}"
         )
 
         return True
@@ -65,117 +32,54 @@ def probar_conexion():
     except Exception as e:
 
         print(
-            f"Error de MongoDB: {e}"
+            f"Error conectando con SCOPE API: {e}"
         )
 
         return False
 
-def buscar_componentes(tipo, presupuesto):
-
-    try:
-
-        db = obtener_db()
-
-        consulta = {
-            "tipo": tipo,
-            "precio_mxn": {
-                "$lte": presupuesto
-            },
-            "activo": True
-        }
-
-        return list(
-            db.componentes.find(
-                consulta,
-                {
-                    "_id": 0
-                }
-            ).sort(
-                "nivel_rendimiento",
-                -1
-            )
-        )
-
-    except Exception as e:
-
-        print(
-            f"MongoDB no disponible: {e}"
-        )
-
-        return []
-
-def buscar_equipos(
-    presupuesto,
-    nivel_minimo=0
-):
-
-    try:
-
-        db = obtener_db()
-
-        consulta = {
-            "precio_mxn": {
-                "$lte": presupuesto
-            },
-            "nivel_rendimiento": {
-                "$gte": nivel_minimo
-            },
-            "activo": True
-        }
-
-        return list(
-            db.equipos.find(
-                consulta,
-                {
-                    "_id": 0
-                }
-            ).sort(
-                "nivel_rendimiento",
-                -1
-            )
-        )
-
-    except Exception as e:
-
-        print(
-            f"MongoDB no disponible: {e}"
-        )
-
-        return []
 
 def obtener_componentes():
 
-    db = obtener_db()
+    try:
 
-    return list(
-        db.componentes.find(
-            {
-                "activo": True
-            },
-            {
-                "_id": 0
-            }
+        response = requests.get(
+            f"{API_URL}/api/componentes/todos",
+            timeout=TIMEOUT
         )
-    )
+
+        response.raise_for_status()
+
+        return response.json()
+
+    except Exception as e:
+
+        print(
+            f"Error obteniendo componentes: {e}"
+        )
+
+        return []
 
 
 def obtener_equipos():
 
-    db = obtener_db()
+    try:
 
-    return list(
-        db.equipos.find(
-            {
-                "activo": True
-            },
-            {
-                "_id": 0
-            }
+        response = requests.get(
+            f"{API_URL}/api/equipos/todos",
+            timeout=TIMEOUT
         )
-    )
 
+        response.raise_for_status()
 
+        return response.json()
 
+    except Exception as e:
+
+        print(
+            f"Error obteniendo equipos: {e}"
+        )
+
+        return []
 
 
 def buscar_componentes(
@@ -183,27 +87,28 @@ def buscar_componentes(
     presupuesto
 ):
 
-    db = obtener_db()
+    try:
 
-    consulta = {
-        "tipo": tipo,
-        "precio_mxn": {
-            "$lte": presupuesto
-        },
-        "activo": True
-    }
-
-    return list(
-        db.componentes.find(
-            consulta,
-            {
-                "_id": 0
-            }
-        ).sort(
-            "nivel_rendimiento",
-            -1
+        response = requests.get(
+            f"{API_URL}/api/componentes",
+            params={
+                "tipo": tipo,
+                "presupuesto": presupuesto
+            },
+            timeout=TIMEOUT
         )
-    )
+
+        response.raise_for_status()
+
+        return response.json()
+
+    except Exception as e:
+
+        print(
+            f"Error consultando componentes: {e}"
+        )
+
+        return []
 
 
 def buscar_equipos(
@@ -211,29 +116,28 @@ def buscar_equipos(
     nivel_minimo=0
 ):
 
-    db = obtener_db()
+    try:
 
-    consulta = {
-        "precio_mxn": {
-            "$lte": presupuesto
-        },
-        "nivel_rendimiento": {
-            "$gte": nivel_minimo
-        },
-        "activo": True
-    }
-
-    return list(
-        db.equipos.find(
-            consulta,
-            {
-                "_id": 0
-            }
-        ).sort(
-            "nivel_rendimiento",
-            -1
+        response = requests.get(
+            f"{API_URL}/api/equipos",
+            params={
+                "presupuesto": presupuesto,
+                "nivel_minimo": nivel_minimo
+            },
+            timeout=TIMEOUT
         )
-    )
+
+        response.raise_for_status()
+
+        return response.json()
+
+    except Exception as e:
+
+        print(
+            f"Error consultando equipos: {e}"
+        )
+
+        return []
 
 
 def buscar_componentes_compatibles(
@@ -244,105 +148,87 @@ def buscar_componentes_compatibles(
 
     try:
 
-        db = obtener_db()
-
-        consulta = {
-            "tipo": tipo,
-            "precio_mxn": {
-                "$lte": presupuesto
-            },
-            "activo": True
-        }
-
-
         compatibilidad = (
             compatibilidad
             or {}
         )
 
-
-        if tipo == "RAM":
-
-            tecnologia = compatibilidad.get(
-                "tipo_ram"
-            )
-
-            formato = compatibilidad.get(
-                "formato_ram"
-            )
-
-            if (
-                tecnologia
-                and tecnologia != "Desconocido"
-            ):
-
-                consulta[
-                    "compatibilidad.tecnologia"
-                ] = tecnologia
+        params = {
+            "tipo": tipo,
+            "presupuesto": presupuesto
+        }
 
 
-            if (
-                formato
-                and formato != "Desconocido"
-            ):
+        tipo_ram = compatibilidad.get(
+            "tipo_ram"
+        )
 
-                consulta[
-                    "compatibilidad.formato"
-                ] = formato
+        formato_ram = compatibilidad.get(
+            "formato_ram"
+        )
 
+        socket_cpu = compatibilidad.get(
+            "socket_cpu"
+        )
 
-        elif tipo == "CPU":
-
-            socket = compatibilidad.get(
-                "socket_cpu"
-            )
-
-            if (
-                socket
-                and socket != "Desconocido"
-            ):
-
-                consulta[
-                    "compatibilidad.socket"
-                ] = socket
-
-
-        elif tipo == "SSD":
-
-            interfaces = compatibilidad.get(
-                "interfaces_almacenamiento",
-                []
-            )
-
-            if interfaces:
-
-                consulta[
-                    "compatibilidad.interfaz"
-                ] = {
-                    "$in": interfaces
-                }
-
-
-        productos = list(
-            db.componentes.find(
-                consulta,
-                {
-                    "_id": 0
-                }
-            ).sort(
-                "nivel_rendimiento",
-                -1
-            )
+        interfaces = compatibilidad.get(
+            "interfaces_almacenamiento",
+            []
         )
 
 
-        return productos
+        if (
+            tipo_ram
+            and tipo_ram != "Desconocido"
+        ):
+
+            params["tipo_ram"] = tipo_ram
+
+
+        if (
+            formato_ram
+            and formato_ram != "Desconocido"
+        ):
+
+            params[
+                "formato_ram"
+            ] = formato_ram
+
+
+        if (
+            socket_cpu
+            and socket_cpu != "Desconocido"
+        ):
+
+            params[
+                "socket_cpu"
+            ] = socket_cpu
+
+
+        if interfaces:
+
+            params[
+                "interfaces"
+            ] = ",".join(
+                interfaces
+            )
+
+
+        response = requests.get(
+            f"{API_URL}/api/componentes/compatibles",
+            params=params,
+            timeout=TIMEOUT
+        )
+
+        response.raise_for_status()
+
+        return response.json()
 
     except Exception as e:
 
         print(
             "Error consultando compatibilidad "
-            f"en MongoDB: {e}"
+            f"desde SCOPE API: {e}"
         )
 
         return []
