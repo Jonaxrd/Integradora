@@ -1,7 +1,7 @@
 import requests
 
 
-API_URL = "https://TU-SERVICIO.onrender.com"
+API_URL = "https://integradora-ex0x.onrender.com"
 
 TIMEOUT = 15
 
