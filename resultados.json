@@ -6,11 +6,11 @@
         "gaming": "Limitado para videojuegos modernos",
         "recommendation": "Se recomienda priorizar actualizaciones de hardware"
     },
-    "budget": 4000,
+    "budget": 8000,
     "hardware_summary": {
         "cpu": "AMD Athlon Silver 3050U with Radeon Graphics",
         "ram_gb": 13.92,
-        "ram_usage": 78.5,
+        "ram_usage": 74.1,
         "gpu": "No disponible",
         "gpu_vram_mb": 0,
         "cpu_temperature": "No disponible",
@@ -68,6 +68,32 @@
                 },
                 "imagen_url": "https://http2.mlstatic.com/D_NQ_NP_2X_652899-MLU75209627680_032024-F.webp",
                 "compra_url": "https://listado.mercadolibre.com.mx/ryzen-5-7600",
+                "tienda": "Mercado Libre",
+                "stock": true,
+                "activo": true,
+                "compatibility_status": "compatible"
+            }
+        },
+        {
+            "component": "GPU",
+            "suggestion": "Considerar una tarjeta gráfica dedicada",
+            "impact": "Mayor rendimiento en videojuegos, edición y aplicaciones 3D.",
+            "cost": 7808,
+            "priority": 8,
+            "reason": "GPU detectada: No disponible.",
+            "product": {
+                "nombre": "XFX Radeon RX 7600 8GB",
+                "marca": "XFX / AMD",
+                "tipo": "GPU",
+                "vram_gb": 8,
+                "precio_mxn": 7808,
+                "nivel_rendimiento": 82,
+                "descripcion": "Tarjeta gráfica Radeon RX 7600 de 8 GB orientada a gaming en resolución 1080p.",
+                "compatibilidad": {
+                    "interfaz": "PCIe"
+                },
+                "imagen_url": "",
+                "compra_url": "https://listado.mercadolibre.com.mx/radeon-rx-7600",
                 "tienda": "Mercado Libre",
                 "stock": true,
                 "activo": true,

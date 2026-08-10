@@ -1,10 +1,26 @@
 import os
+import sys
 
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
 
-load_dotenv()
+def obtener_directorio_app():
+
+    if getattr(sys, "frozen", False):
+        return os.path.dirname(sys.executable)
+
+    return os.path.dirname(
+        os.path.abspath(__file__)
+    )
+
+
+RUTA_ENV = os.path.join(
+    obtener_directorio_app(),
+    ".env"
+)
+
+load_dotenv(RUTA_ENV)
 
 
 MONGO_URI = os.getenv("MONGO_URI")
